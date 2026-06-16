@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="author" content="Mansour Alghamdi">
+<meta name="description" content="مدرّب تكنيكات الترتيب في HSK4 — رتّب الكلمات من شكلها وموضعها دون الحاجة لمعرفة معانيها. منهج + مرجع إشارات + تدريب أعمى.">
+<meta name="theme-color" content="#221a12">
+<title>HSK4 — مدرّب التكنيكات · 排序技巧</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fbf8f2; --paper:#fff; --paper2:#f6f1e7;
+  --ink:#221a12; --ink2:#564433; --ink3:#8a7152;
+  --gold:#c2913f; --gold2:#9e7327; --goldsoft:rgba(194,145,63,.14);
+  --seal:#c0362c; --sealsoft:rgba(192,54,44,.10);
+  --jade:#2f7d4f; --jadesoft:rgba(47,125,79,.09);
+  --grid:#e7ddca; --line:#e8ddc9;
+  --shadow:0 6px 22px rgba(34,26,18,.07);
+}
+html,body{font-family:'Tahoma','Segoe UI',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-overflow-scrolling:touch}
+.zh{font-family:'PingFang SC','Noto Sans CJK SC','Hiragino Sans GB','Microsoft YaHei',sans-serif}
+body{padding-bottom:64px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---- top bar ---- */
+.topbar{background:linear-gradient(135deg,#221a12,#3a2c1c);color:#f3ecdf;padding:13px 16px;position:sticky;top:0;z-index:60;box-shadow:var(--shadow)}
+.topbar-row{display:flex;align-items:center;justify-content:space-between;max-width:920px;margin:0 auto;gap:10px}
+.logo{display:flex;align-items:center;gap:11px}
+.seal-badge{width:38px;height:38px;border-radius:9px;background:var(--seal);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
+.logo-text{font-size:.98rem;font-weight:800;letter-spacing:.2px}
+.logo-text .sub{display:block;font-size:.66rem;color:var(--gold);font-weight:500;margin-top:2px;letter-spacing:.4px}
+.gear{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#f3ecdf;width:34px;height:34px;border-radius:8px;font-size:1rem;cursor:pointer}
+.gear:hover{background:rgba(255,255,255,.16)}
+
+/* ---- tabs ---- */
+.tabs{display:flex;background:var(--paper);max-width:920px;margin:0 auto;border-bottom:1px solid var(--line)}
+.tab{flex:1;padding:13px 8px;text-align:center;cursor:pointer;font-size:.9rem;font-weight:700;color:var(--ink2);border-bottom:3px solid transparent;background:transparent;transition:.2s}
+.tab .ic{display:block;font-size:1.25em;margin-bottom:3px}
+.tab .zh{display:block;font-size:.68em;color:var(--gold2);margin-top:2px}
+.tab.active{color:var(--seal);border-bottom-color:var(--seal)}
+.tab:focus-visible,.chip:focus-visible,.btn:focus-visible,.frag:focus-visible,.slot:focus-visible,.zh-clickable:focus-visible,.gear:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.wrap{max-width:920px;margin:0 auto;padding:16px 14px}
+.view{display:none}
+.view.active{display:block;animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ---- generic ---- */
+.lead{background:linear-gradient(135deg,#fffdf8,#f8f1e2);border:1px solid #ecdfc4;border-radius:14px;padding:15px 17px;margin-bottom:16px;line-height:1.75;font-size:.86rem;color:var(--ink2)}
+.lead h2{color:var(--ink);font-size:1.12rem;margin-bottom:6px;letter-spacing:.2px}
+.lead .hi{color:var(--seal);font-weight:700}
+.eyebrow{font-size:.7rem;font-weight:800;letter-spacing:1.2px;color:var(--gold2);text-transform:uppercase;margin-bottom:10px}
+
+/* ---- skeleton (田字格 signature) ---- */
+.skeleton{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.skeleton-title{font-size:.92rem;font-weight:800;margin-bottom:3px}
+.skeleton-sub{font-size:.74rem;color:var(--ink3);margin-bottom:13px}
+.skel-row{display:flex;gap:8px;flex-wrap:wrap;direction:ltr;justify-content:center}
+.skel-cell{position:relative;min-width:78px;flex:1;max-width:130px;border:1.5px solid var(--grid);border-radius:9px;
+  background-image:linear-gradient(var(--grid) .5px,transparent .5px),linear-gradient(90deg,var(--grid) .5px,transparent .5px);
+  background-size:50% 50%;background-position:center;
+  padding:14px 7px 9px;text-align:center}
+.skel-cell .pos{position:absolute;top:3px;inset-inline-start:5px;font-size:.6rem;font-weight:800;color:var(--seal)}
+.skel-cell .zhlab{font-size:.92rem;font-weight:700;color:var(--ink)}
+.skel-cell .arlab{font-size:.66rem;color:var(--ink3);margin-top:3px;direction:rtl}
+.skel-cell.opt{border-style:dashed;opacity:.85}
+.skel-cell.verb{border-color:var(--gold);background-color:var(--goldsoft)}
+.skel-note{font-size:.76rem;color:var(--ink2);margin-top:12px;line-height:1.7;border-top:1px dashed var(--line);padding-top:10px}
+.skel-note b{color:var(--seal)}
+
+/* ---- law cards ---- */
+.law{background:var(--paper);border:1px solid var(--line);border-radius:13px;margin-bottom:11px;box-shadow:var(--shadow);overflow:hidden}
+.law-head{display:flex;align-items:flex-start;gap:12px;padding:14px 15px}
+.law-no{flex-shrink:0;width:30px;height:30px;border-radius:8px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem}
+.law-no.f{background:var(--seal)} .law-no.t{background:var(--gold2)} .law-no.v{background:var(--jade)}
+.law-body{flex:1;min-width:0}
+.law-title{font-size:.92rem;font-weight:800;color:var(--ink);line-height:1.5}
+.law-rule{font-size:.82rem;color:var(--ink2);line-height:1.72;margin-top:5px}
+.law-rule b{color:var(--seal)}
+.law-rule .zhk{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;direction:ltr;display:inline-block;background:var(--paper2);color:var(--ink);padding:0 6px;border-radius:5px;font-weight:700;margin:0 2px}
+.law-ex{margin:11px 15px 14px;background:#fdfaf3;border:1px solid #efe3cc;border-inline-start:3px solid var(--gold);border-radius:9px;padding:9px 11px}
+.law-ex .exlab{font-size:.66rem;font-weight:800;color:var(--gold2);letter-spacing:.6px;margin-bottom:6px}
+.ex-line{display:flex;align-items:center;gap:7px;direction:ltr;margin:5px 0;flex-wrap:wrap}
+.ex-zh{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;font-size:1.02rem;font-weight:600;color:var(--ink);line-height:1.55;letter-spacing:.5px}
+
+/* clickable tokens */
+.zh-token{display:inline-block;margin:0 .5px}
+.zh-clickable{cursor:pointer;border-radius:4px;padding:0 1px;transition:background .15s}
+.zh-clickable:hover{background:var(--goldsoft)}
+.zh-clickable.playing{background:var(--seal);color:#fff}
+.tts-btn{flex-shrink:0;width:25px;height:25px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:.78rem;line-height:1}
+.tts-btn:hover{background:var(--paper2)} .tts-btn.playing{background:var(--seal);color:#fff;border-color:var(--seal)}
+
+/* ---- signal reference ---- */
+.filterbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:7px 13px;border-radius:20px;border:1.5px solid var(--line);background:#fff;font-size:.78rem;font-weight:700;color:var(--ink2);cursor:pointer;transition:.18s}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip[data-c="front"][aria-pressed="true"]{background:var(--seal);border-color:var(--seal)}
+.chip[data-c="tail"][aria-pressed="true"]{background:var(--gold2);border-color:var(--gold2)}
+.chip[data-c="adv"][aria-pressed="true"]{background:#5a4a8a;border-color:#5a4a8a}
+.chip[data-c="pair"][aria-pressed="true"]{background:var(--jade);border-color:var(--jade)}
+.grp{margin-bottom:18px}
+.grp-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.grp-tag{font-size:.66rem;font-weight:800;letter-spacing:.5px;padding:4px 10px;border-radius:7px;color:#fff}
+.tag-front{background:var(--seal)} .tag-tail{background:var(--gold2)} .tag-adv{background:#5a4a8a}
+.tag-attach{background:var(--ink)} .tag-pair{background:var(--jade)} .tag-back{background:#8a5a2a}
+.grp-desc{font-size:.76rem;color:var(--ink3);line-height:1.5}
+.sig{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:9px;box-shadow:var(--shadow)}
+.sig-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.sig-zh{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;direction:ltr;font-size:1.05rem;font-weight:800;color:var(--ink);background:var(--paper2);padding:3px 11px;border-radius:8px}
+.sig-rule{font-size:.82rem;color:var(--ink2);line-height:1.65;margin-top:8px}
+.sig-rule b{color:var(--seal)}
+.sig-ex{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;direction:ltr;font-size:.95rem;color:var(--ink2);margin-top:8px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.sig-ex .exlab{font-family:'Tahoma',sans-serif;direction:rtl;font-size:.66rem;color:var(--gold2);font-weight:800;background:var(--goldsoft);padding:1px 6px;border-radius:5px}
+
+/* ---- blind drill ---- */
+.drill-stats{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap}
+.stat{flex:1;min-width:90px;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:10px 12px;text-align:center;box-shadow:var(--shadow)}
+.stat .n{font-size:1.4rem;font-weight:800;color:var(--ink);line-height:1}
+.stat .n.j{color:var(--jade)} .stat .n.s{color:var(--seal)}
+.stat .l{font-size:.66rem;color:var(--ink3);margin-top:4px;font-weight:600}
+.card-drill{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:var(--shadow)}
+.drill-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px;flex-wrap:wrap}
+.rule-pill{font-size:.7rem;font-weight:800;color:var(--gold2);background:var(--goldsoft);padding:4px 11px;border-radius:14px}
+.weak-pill{font-size:.66rem;font-weight:800;color:var(--seal);background:var(--sealsoft);padding:4px 10px;border-radius:14px}
+.drill-instr{font-size:.78rem;color:var(--ink3);margin-bottom:11px;line-height:1.5}
+
+.bank{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;direction:ltr;padding:12px;background:var(--paper2);border-radius:11px;min-height:50px;align-items:center}
+.frag{padding:8px 13px;background:#fff;border:1.5px solid #d8cdb8;border-radius:9px;font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;font-size:1.06rem;cursor:pointer;user-select:none;transition:transform .12s,opacity .12s;color:var(--ink);font-weight:600}
+.frag:active{transform:scale(.94)}
+.frag.used{opacity:.28;border-style:dashed;cursor:default;pointer-events:none}
+
+.slots{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:ltr;margin:14px 0 4px}
+.slot{position:relative;min-width:58px;min-height:50px;display:flex;align-items:center;justify-content:center;
+  border:1.5px dashed var(--grid);border-radius:10px;
+  background-image:linear-gradient(var(--grid) .5px,transparent .5px),linear-gradient(90deg,var(--grid) .5px,transparent .5px);
+  background-size:50% 50%;background-position:center;cursor:pointer;
+  font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;font-size:1.06rem;font-weight:700;color:var(--ink);padding:8px 11px;transition:.15s}
+.slot .pos{position:absolute;top:2px;inset-inline-start:4px;font-size:.56rem;font-weight:800;color:var(--seal);font-family:'Tahoma',sans-serif}
+.slot.filled{border-style:solid;border-color:var(--gold);background-color:var(--goldsoft)}
+.slot.first-hint::after,.slot.last-hint::after{position:absolute;bottom:2px;inset-inline-end:4px;font-size:.5rem;font-weight:800;font-family:'Tahoma',sans-serif;color:var(--ink3)}
+.slots.ok .slot{border-color:var(--jade);background-color:var(--jadesoft)}
+.slots.bad .slot{border-color:var(--seal)}
+
+.btn-row{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.btn{padding:9px 18px;border-radius:9px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s}
+.btn-check{background:var(--seal);color:#fff} .btn-check:hover{filter:brightness(1.07)}
+.btn-hint{background:#fff;border:1.5px solid #5a4a8a;color:#5a4a8a} .btn-hint:hover{background:rgba(90,74,138,.07)}
+.btn-clear{background:#fff;border:1.5px solid var(--line);color:var(--ink2)} .btn-clear:hover{background:var(--paper2)}
+.btn-next{background:var(--ink);color:#fff} .btn-next:hover{filter:brightness(1.15)}
+
+.cue{margin-top:13px;background:#f4f1fb;border:1px solid #ddd5f2;border-inline-start:3px solid #5a4a8a;border-radius:10px;padding:11px 13px;font-size:.82rem;line-height:1.75;color:var(--ink2);display:none}
+.cue.show{display:block;animation:fade .2s}
+.cue .cuelab{font-size:.68rem;font-weight:800;color:#5a4a8a;letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.cue b{color:var(--seal)} .cue .zhk{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;direction:ltr;display:inline-block;background:#fff;padding:0 6px;border-radius:5px;font-weight:700;margin:0 2px}
+.cue ul{margin:0;padding-inline-start:18px} .cue li{margin:5px 0}
+
+.result{margin-top:13px;border-radius:11px;padding:13px;font-size:.84rem;display:none}
+.result.show{display:block;animation:fade .2s}
+.result.ok{background:var(--jadesoft);border:1px solid rgba(47,125,79,.3)}
+.result.bad{background:var(--sealsoft);border:1px solid rgba(192,54,44,.3)}
+.result-head{font-weight:800;font-size:.92rem;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.result.ok .result-head{color:var(--jade)} .result.bad .result-head{color:var(--seal)}
+.ans-zh{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;direction:ltr;font-size:1.18rem;font-weight:700;text-align:center;margin:7px 0;letter-spacing:.5px;color:var(--ink)}
+.ans-pin{font-style:italic;color:#5a7a90;direction:ltr;text-align:center;font-size:.8rem;margin:3px 0}
+.ans-ar{font-size:.86rem;color:var(--ink2);line-height:1.7;margin-top:9px;padding-top:9px;border-top:1px solid rgba(0,0,0,.08)}
+.ans-ar .reveal{font-size:.66rem;font-weight:800;color:var(--gold2);background:var(--goldsoft);padding:1px 7px;border-radius:5px;margin-inline-end:6px}
+
+/* ---- modal ---- */
+.modal{position:fixed;inset:0;background:rgba(34,26,18,.55);display:none;align-items:center;justify-content:center;z-index:90;padding:18px}
+.modal.show{display:flex;animation:fade .2s}
+.modal-box{background:var(--paper);border-radius:16px;padding:20px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-box h3{font-size:1.02rem;margin-bottom:12px}
+.modal-box label{font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin:13px 0 6px}
+.modal-box .opt{display:flex;align-items:center;gap:8px;font-size:.82rem;margin:7px 0;color:var(--ink2)}
+.modal-box select,.modal-box input{width:100%;padding:9px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;font-size:.85rem}
+.modal-info{font-size:.72rem;color:var(--ink3);margin-top:6px;line-height:1.5}
+.modal-actions{display:flex;gap:8px;margin-top:18px}
+.modal-actions .btn{flex:1}
+.btn-save{background:var(--jade);color:#fff} .btn-close{background:#fff;border:1.5px solid var(--line);color:var(--ink2)}
+.footer{text-align:center;font-size:.68rem;color:var(--ink3);margin-top:22px;line-height:1.6}
+
+/* ===== color key / legend ===== */
+.legend,.filterbar{display:flex;flex-wrap:wrap;gap:7px}
+.key{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:20px;border:1.5px solid var(--line);background:#fff;font-size:.74rem;font-weight:700;color:var(--ink2);cursor:pointer;transition:.15s}
+.key .dot{width:11px;height:11px;border-radius:50%;background:var(--sw,#999);flex:none}
+.key .kc{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;color:var(--ink3);font-size:.64rem}
+.key .kn{background:var(--paper2);border-radius:9px;padding:0 6px;font-size:.62rem;color:var(--ink3);font-family:'Tahoma',sans-serif}
+.key[aria-pressed="true"]{color:#fff;border-color:var(--sw,var(--ink));background:var(--sw,var(--ink))}
+.key[aria-pressed="true"] .kc,.key[aria-pressed="true"] .kn{color:#fff;background:rgba(255,255,255,.18)}
+/* signal card color coding */
+.sig{border-inline-start:4px solid var(--sc,var(--line))}
+.sig-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sig-cls{display:inline-block;font-size:.58rem;font-weight:800;color:#fff;background:var(--sc,#999);padding:2px 7px;border-radius:6px;font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;flex:none}
+/* ===== packaged tests ===== */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:9px;margin:6px 0 2px}
+.test-tile{position:relative;aspect-ratio:1/1;border:1.5px solid var(--line);border-radius:13px;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:.15s;box-shadow:var(--shadow)}
+.test-tile:active{transform:scale(.95)}
+.test-tile .tn{font-size:1.2rem;font-weight:800;color:var(--ink);font-family:'Tahoma',sans-serif}
+.test-tile .tl{font-size:.54rem;color:var(--ink3);font-weight:700}
+.test-tile .tbest{position:absolute;top:5px;inset-inline-end:6px;font-size:.56rem;font-weight:800;font-family:'Tahoma',sans-serif}
+.test-tile.passed{border-color:var(--jade);background:var(--jadesoft)}
+.test-tile.tried{border-color:var(--gold)}
+.sect-h{font-size:.84rem;font-weight:800;color:var(--ink2);margin:20px 0 9px;display:flex;align-items:center;gap:7px}
+.sect-h .zh{font-size:.64rem;color:var(--ink3);font-weight:700;font-family:'PingFang SC','Noto Sans CJK SC',sans-serif}
+.cls-row{display:flex;flex-wrap:wrap;gap:7px}
+.cls-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:11px;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-size:.76rem;font-weight:700;color:var(--ink2);transition:.12s}
+.cls-btn .dot{width:10px;height:10px;border-radius:50%;background:var(--sw);flex:none}
+.cls-btn .cnt{font-size:.6rem;color:var(--ink3);font-family:'Tahoma',sans-serif}
+.cls-btn:active{transform:scale(.96)}
+.review-card{margin-top:2px;border:1.5px dashed var(--seal);border-radius:13px;background:var(--sealsoft);padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}
+.review-card.off{opacity:.6;cursor:default;border-style:solid;border-color:var(--line);background:var(--paper)}
+.review-card .rl{font-weight:800;color:var(--seal);font-size:.88rem}
+.review-card .rs{font-size:.66rem;color:var(--ink3);margin-top:2px}
+/* run header */
+.run-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.run-top .prog{font-size:.78rem;font-weight:800;color:var(--ink)}
+.run-top .qt{font-size:.64rem;color:var(--ink3);margin-top:2px}
+.run-bar{height:7px;border-radius:5px;background:var(--paper2);overflow:hidden;margin-bottom:14px}
+.run-bar > i{display:block;height:100%;background:var(--gold);transition:.3s}
+.btn-exit{background:none;border:none;color:var(--ink3);font-size:.76rem;font-weight:700;cursor:pointer;padding:4px}
+/* results */
+.done-wrap{text-align:center}
+.score-ring{width:130px;height:130px;border-radius:50%;margin:8px auto 6px;display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--rc,var(--jade)) calc(var(--p,0)*1%), var(--paper2) 0)}
+.score-ring > div{width:104px;height:104px;border-radius:50%;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-ring .pp{font-size:1.8rem;font-weight:800;color:var(--ink);line-height:1;font-family:'Tahoma',sans-serif}
+.score-ring .ps{font-size:.64rem;color:var(--ink3);font-weight:700;margin-top:3px;font-family:'Tahoma',sans-serif}
+.done-title{font-size:1.02rem;font-weight:800;margin:2px 0 4px;color:var(--ink)}
+.brk{margin:18px 0 4px;text-align:start}
+.brk-row{display:flex;align-items:center;gap:9px;margin:7px 0}
+.brk-row .bl{flex:none;width:84px;font-size:.72rem;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:6px}
+.brk-row .bl .dot{width:9px;height:9px;border-radius:50%;background:var(--sw);flex:none}
+.brk-row .bbar{flex:1;height:9px;border-radius:5px;background:var(--paper2);overflow:hidden}
+.brk-row .bbar > i{display:block;height:100%}
+.brk-row .bf{flex:none;font-size:.64rem;font-weight:800;color:var(--ink3);font-family:'Tahoma',sans-serif;width:36px;text-align:end}
+.missed{text-align:start;margin-top:14px}
+.missed-h{font-size:.78rem;font-weight:800;color:var(--seal);margin-bottom:7px}
+.missed-item{background:var(--paper);border:1px solid var(--line);border-inline-start:3px solid var(--seal);border-radius:9px;padding:9px 11px;margin:7px 0}
+.missed-item .mi-zh{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;direction:ltr;font-size:1.02rem;color:var(--ink)}
+.missed-item .mi-ar{font-size:.74rem;color:var(--ink2);margin-top:4px}
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="logo">
+      <span class="seal-badge zh">序</span>
+      <span class="logo-text">مدرّب التكنيكات<span class="sub zh">排序技巧 · HSK4 ترتيب الجملة</span></span>
+    </div>
+    <button class="gear" onclick="openSettings()" aria-label="الإعدادات">⚙️</button>
+  </div>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab active" data-view="method" role="tab" onclick="showView('method')"><span class="ic">🧭</span>المنهج<span class="zh">方法</span></button>
+  <button class="tab" data-view="signals" role="tab" onclick="showView('signals')"><span class="ic">📑</span>الإشارات<span class="zh">信号</span></button>
+  <button class="tab" data-view="drill" role="tab" onclick="showView('drill')"><span class="ic">🎯</span>تدريب أعمى<span class="zh">盲练</span></button>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ METHOD ============ -->
+  <section id="view-method" class="view active" role="tabpanel">
+    <div class="lead">
+      <h2>رتّب الجملة من <span class="hi">شكلها</span>، لا من معناها</h2>
+      أسئلة الترتيب (排序، الأسئلة 86–95) لا تتطلّب فهم كلّ كلمة. كلّ قطعة تحمل <span class="hi">إشارة موضع</span>: بعضها يتصدّر الجملة، بعضها يُختَم بها، وبعضها يلتصق بكلمة بعينها. تعلّم هذه الإشارات السبع وستُركّب الجملة كأنّها أحجية، حتى لو لم تعرف المعنى.
+    </div>
+
+    <!-- 田字格 skeleton signature -->
+    <div class="skeleton">
+      <div class="skeleton-title">العمود الفقري للجملة الصينية <span class="zh" style="color:var(--ink3);font-weight:600">· 句子骨架</span></div>
+      <div class="skeleton-sub">املأ الخانات بهذا الترتيب. الخانات المتقطّعة اختيارية.</div>
+      <div class="skel-row">
+        <div class="skel-cell opt"><span class="pos">①</span><span class="zhlab zh">时间/地点</span><span class="arlab">زمن / مكان</span></div>
+        <div class="skel-cell"><span class="pos">②</span><span class="zhlab zh">主语</span><span class="arlab">الفاعل / الموضوع</span></div>
+        <div class="skel-cell opt"><span class="pos">③</span><span class="zhlab zh">状语</span><span class="arlab">ظرف (都/也/就/正在…)</span></div>
+        <div class="skel-cell verb"><span class="pos">④</span><span class="zhlab zh">动词</span><span class="arlab">الفعل (+把/被)</span></div>
+        <div class="skel-cell opt"><span class="pos">⑤</span><span class="zhlab zh">补语/宾语</span><span class="arlab">مكمّل / مفعول</span></div>
+        <div class="skel-cell opt"><span class="pos">⑥</span><span class="zhlab zh">了/吗/吧</span><span class="arlab">لاحقة النهاية</span></div>
+      </div>
+      <div class="skel-note">القاعدة الذهبية: علامات الجانب <b class="zh">了 / 着 / 过</b> تلتصق <b>بالفعل مباشرة</b> ولا تأتي أبداً قبل الفاعل. والظروف (都/也/就/不…) تقع <b>قبل الفعل</b>، لا بعده.</div>
+    </div>
+
+    <div class="eyebrow">القوانين السبعة · الترتيب من اليسار لليمين كما يُقرأ الصيني</div>
+    <div id="laws"></div>
+
+    <div class="footer">
+      انتقل إلى تبويب <b>الإشارات</b> لمرجع كامل بكلّ علامة وموضعها، أو إلى <b>تدريب أعمى</b> لتطبيق المنهج على أسئلة امتحانية حقيقية.
+    </div>
+  </section>
+
+  <!-- ============ SIGNALS ============ -->
+  <section id="view-signals" class="view" role="tabpanel">
+    <div class="lead">
+      <h2>مرجع الإشارات التركيبية</h2>
+      كلّ علامة هنا تخبرك <span class="hi">بموضعها في الجملة</span> دون أن تحتاج لمعرفة معناها. الأمثلة مسحوبة من بنك الأسئلة الحقيقي — اضغط أيّ جملة لسماعها.
+    </div>
+    <div class="filterbar" id="filterbar"></div>
+    <div id="signals"></div>
+  </section>
+
+  <!-- ============ DRILL ============ -->
+  <section id="view-drill" class="view" role="tabpanel">
+    <div id="drill-home"></div>
+
+    <div id="drill-run" style="display:none">
+      <div class="run-top">
+        <button class="btn-exit" onclick="renderHome()">← خروج</button>
+        <div style="text-align:center"><div class="prog" id="run-prog">السؤال ١ / ١٠</div><div class="qt" id="run-title">اختبار</div></div>
+        <span style="width:54px"></span>
+      </div>
+      <div class="run-bar"><i id="run-fill" style="width:0%"></i></div>
+      <div class="card-drill" id="drill-card">
+        <div class="drill-meta">
+          <span class="rule-pill" id="d-rule">…</span>
+          <span class="weak-pill" id="d-weak" style="display:none">↻ سؤال للمراجعة</span>
+        </div>
+        <div class="drill-instr">رتّب القطع بالترتيب الصحيح. <b>لا تنظر للمعنى</b> — استعن بالتلميح التركيبي فقط؛ يُكشف المعنى بعد التحقّق.</div>
+        <div class="bank" id="d-bank"></div>
+        <div class="slots" id="d-slots"></div>
+        <div class="btn-row" id="d-actions">
+          <button class="btn btn-hint" onclick="showCue()">🔍 تلميح تركيبي</button>
+          <button class="btn btn-clear" onclick="clearSlots()">مسح</button>
+          <button class="btn btn-check" onclick="checkDrill()">تحقّق</button>
+        </div>
+        <div class="cue" id="d-cue"></div>
+        <div class="result" id="d-result"></div>
+        <div class="btn-row" id="d-nextrow" style="display:none">
+          <button class="btn btn-next" onclick="nextStep()">السؤال التالي ←</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="drill-done" style="display:none"></div>
+  </section>
+</div>
+
+<!-- settings modal -->
+<div class="modal" id="settingsModal">
+  <div class="modal-box">
+    <h3>⚙️ الإعدادات</h3>
+    <label>مصدر النطق الصوتي</label>
+    <div class="opt"><input type="radio" name="ttsSrc" value="auto" id="ts-a"><label for="ts-a" style="margin:0;font-weight:500">تلقائي (الأفضل المتاح)</label></div>
+    <div class="opt"><input type="radio" name="ttsSrc" value="system" id="ts-s"><label for="ts-s" style="margin:0;font-weight:500">صوت النظام فقط (بدون إنترنت)</label></div>
+    <div class="opt"><input type="radio" name="ttsSrc" value="youdao" id="ts-y"><label for="ts-y" style="margin:0;font-weight:500">YouDao (يحتاج إنترنت)</label></div>
+    <div class="modal-info" id="ttsVoiceInfo"></div>
+    <label style="margin-top:16px">تقدّم التدريب</label>
+    <button class="btn btn-clear" style="width:100%" onclick="resetProgress()">إعادة ضبط الإحصائيات وقائمة المراجعة</button>
+    <div class="modal-actions">
+      <button class="btn btn-close" onclick="closeSettings()">إغلاق</button>
+      <button class="btn btn-save" onclick="saveSettings()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== injected: proven TTS engine ===================== */
+const TTS_TONE_MARKS = /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜĀÁǍÀĒÉĚÈĪÍǏÌŌÓǑÒŪÚǓÙ]/g;
+let TTS_CURRENT_AUDIO = null;
+let TTS_BEST_VOICE = null;
+
+// Prefer neural / natural / premium / enhanced zh-CN voices. Score by quality hints in the name.
+function ttsPickBestVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = speechSynthesis.getVoices();
+  const zh = voices.filter(v => /^zh(-CN|_CN|-Hans|-cmn|$)/i.test(v.lang));
+  if (!zh.length) return null;
+  const score = v => {
+    const n = (v.name || '').toLowerCase();
+    let s = 0;
+    if (/neural|natural|premium|enhanced|wavenet|hd/.test(n)) s += 100;
+    if (/yunyang|xiaoxiao|xiaoyi|yunjian|yunxi|yunfeng|tingting|sin-ji/.test(n)) s += 50;  // Known premium voices
+    if (/xiaoxiao|yunxi|yunyang/.test(n)) s += 30;  // Microsoft top tier
+    if (v.localService) s += 10;
+    return s;
+  };
+  zh.sort((a, b) => score(b) - score(a));
+  return zh[0];
+}
+
+// Wait for voices to load (Chrome quirk)
+function ttsInitVoices() {
+  TTS_BEST_VOICE = ttsPickBestVoice();
+  if (!TTS_BEST_VOICE && 'speechSynthesis' in window) {
+    speechSynthesis.addEventListener('voiceschanged', () => {
+      TTS_BEST_VOICE = ttsPickBestVoice();
+    }, { once: true });
+  }
+}
+if ('speechSynthesis' in window) ttsInitVoices();
+
+function ttsGetSource() {
+  const s = localStorage.getItem('hsk4_tts_src');
+  return s || 'auto';  // 'auto' | 'system' | 'youdao'
+}
+function ttsSetSource(s) {
+  if (s === 'auto') localStorage.removeItem('hsk4_tts_src');
+  else localStorage.setItem('hsk4_tts_src', s);
+}
+
+function ttsSyllableCount(p) {
+  if (!p) return 1;
+  const matches = p.match(TTS_TONE_MARKS);
+  return matches ? matches.length : 1;
+}
+
+function ttsGroupChars(sentence, pinyin) {
+  if (!sentence) return [];
+  if (!pinyin) {
+    return [...sentence].map(c => ({ chars: c, pinyin: '', isZh: /[\u4e00-\u9fff]/.test(c) }));
+  }
+  const tokens = pinyin.trim().split(/\s+/).filter(t => t.length > 0);
+  const groups = [];
+  let idx = 0;
+  for (const tok of tokens) {
+    while (idx < sentence.length && !/[\u4e00-\u9fff]/.test(sentence[idx])) {
+      groups.push({ chars: sentence[idx], pinyin: '', isZh: false });
+      idx++;
+    }
+    const n = ttsSyllableCount(tok);
+    const chars = sentence.slice(idx, idx + n);
+    groups.push({ chars, pinyin: tok.replace(/[.,!?;:，。！？、；：]/g,''), isZh: true });
+    idx += n;
+  }
+  while (idx < sentence.length) {
+    groups.push({ chars: sentence[idx], pinyin: '', isZh: false });
+    idx++;
+  }
+  return groups;
+}
+
+function ttsRenderClickable(sentence, pinyin) {
+  const groups = ttsGroupChars(sentence, pinyin);
+  return groups.map(g => {
+    if (!g.isZh) return `<span class="zh-token">${g.chars}</span>`;
+    const safe = g.chars.replace(/"/g, '&quot;');
+    return `<span class="zh-token zh-clickable" onclick="ttsPlay('${safe}', this)" title="${g.pinyin}">${g.chars}</span>`;
+  }).join('');
+}
+
+
+function ttsStop() {
+  if (TTS_CURRENT_AUDIO) {
+    try { TTS_CURRENT_AUDIO.pause(); TTS_CURRENT_AUDIO.src = ''; } catch(e){}
+    TTS_CURRENT_AUDIO = null;
+  }
+  if (window.speechSynthesis) {
+    try { speechSynthesis.cancel(); } catch(e){}
+  }
+  document.querySelectorAll('.zh-clickable.playing,.btn-tts.playing').forEach(el => el.classList.remove('playing'));
+}
+
+function ttsSpeakSystem(text, btnEl) {
+  if (!('speechSynthesis' in window)) return false;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    if (!TTS_BEST_VOICE) TTS_BEST_VOICE = ttsPickBestVoice();
+    if (TTS_BEST_VOICE) u.voice = TTS_BEST_VOICE;
+    u.lang = 'zh-CN';
+    u.rate = 0.92;
+    u.pitch = 1.0;
+    u.volume = 1.0;
+    const cleanup = () => { if (btnEl) btnEl.classList.remove('playing'); };
+    u.onend = cleanup;
+    u.onerror = cleanup;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+    return true;
+  } catch(e) { return false; }
+}
+
+function ttsSpeakYoudao(text, btnEl) {
+  // Ironclad start: wait for FULL download (not just "can play through" estimate),
+  // then force seek to 0, then delay 60ms before play() to let the audio output device warm up.
+  const audio = new Audio();
+  audio.preload = 'auto';
+  TTS_CURRENT_AUDIO = audio;
+  if (btnEl) btnEl.classList.add('loading');
+
+  const cleanup = () => {
+    if (btnEl) { btnEl.classList.remove('playing'); btnEl.classList.remove('loading'); }
+  };
+  let resolved = false;
+  let fellBack = false;
+  const doFallback = () => {
+    if (fellBack || resolved) return;
+    fellBack = true; resolved = true;
+    cleanup();
+    if ('speechSynthesis' in window) ttsSpeakSystem(text, btnEl);
+  };
+
+  const startPlay = () => {
+    if (resolved) return;
+    if (audio !== TTS_CURRENT_AUDIO) return;
+    resolved = true;
+    if (btnEl) btnEl.classList.remove('loading');
+    // Belt and suspenders to guarantee playback from absolute position 0:
+    audio.pause();
+    try { audio.currentTime = 0; } catch(e){}
+    // 60ms delay lets the audio output device fully initialize before the first sample plays.
+    // Without this, the first ~100ms gets swallowed by decoder/output warmup.
+    setTimeout(() => {
+      if (audio !== TTS_CURRENT_AUDIO) return;
+      try { audio.currentTime = 0; } catch(e){}
+      const p = audio.play();
+      if (p && p.catch) p.catch(doFallback);
+    }, 60);
+  };
+
+  // Trigger play only when audio is ACTUALLY fully downloaded (≥98% buffered),
+  // not when the browser merely estimates it can play through.
+  const checkFullyBuffered = () => {
+    if (resolved) return;
+    if (!audio.duration || !audio.buffered.length) return;
+    const end = audio.buffered.end(audio.buffered.length - 1);
+    const start = audio.buffered.start(0);
+    if (start <= 0.05 && end >= audio.duration * 0.98) startPlay();
+  };
+
+  // Register listeners BEFORE setting src so synchronous events aren't missed
+  audio.addEventListener('progress', checkFullyBuffered);
+  audio.addEventListener('canplaythrough', () => {
+    // Grace period after canplaythrough — if still not fully buffered, force play anyway
+    setTimeout(() => { if (!resolved) startPlay(); }, 250);
+  }, { once: true });
+  audio.addEventListener('ended', cleanup, { once: true });
+  audio.addEventListener('error', doFallback, { once: true });
+
+  audio.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`;
+  try { audio.load(); } catch(e){}
+
+  // Safety: if no audio in 8s, fallback to system voice
+  setTimeout(() => { if (!resolved) doFallback(); }, 8000);
+}
+
+function ttsPlay(text, btnEl) {
+  if (!text) return;
+  ttsStop();
+  if (btnEl) btnEl.classList.add('playing');
+
+  const src = ttsGetSource();
+  let useSystem;
+  if (src === 'system') useSystem = true;
+  else if (src === 'youdao') useSystem = false;
+  else {
+    if (!TTS_BEST_VOICE) TTS_BEST_VOICE = ttsPickBestVoice();
+    useSystem = !!(TTS_BEST_VOICE && /neural|natural|premium|enhanced|wavenet|hd|yunyang|xiaoxiao|tingting/i.test(TTS_BEST_VOICE.name || ''));
+  }
+
+  if (useSystem) {
+    if (!ttsSpeakSystem(text, btnEl)) ttsSpeakYoudao(text, btnEl);
+  } else {
+    ttsSpeakYoudao(text, btnEl);
+  }
+}
+
+// Warm browser HTTP cache: kick off a no-op fetch via dummy Audio for each text.
+
+
+/* ===================== injected: real question bank ===================== */
+const GRAMMAR = [{"id": "ba", "code": "A", "title_zh": "把字句", "title_ar": "جملة 把 — المفعول المقدّم", "pattern_zh": "主语 + 把 + 宾语 + 动词 + 补语", "pattern_ar": "فاعل + 把 + المفعول به + الفعل + المكمّل (نتيجة/اتجاه)", "explain_ar": "تُستخدم لتقديم المفعول به قبل الفعل وإبراز التأثير عليه. المكمّل ضروري (لا يصح فعل مجرد). الظروف (快/请/千万 إلخ) تأتي قبل 把.", "examples_zh": ["请把书放进书包里", "快把脸上的汗擦一下", "千万不要把钥匙给别人"], "questions": [{"examId": 1, "qNum": "92", "fragments": "擦一下/汗/快把/脸上的", "answer": "快把脸上的汗擦一下", "rule": "A", "ruleName": "قاعدة 把 — صيغة المفعول المقدم", "explain": "把 + المفعول + فعل + مكمل. هنا: 快(بسرعة) + 把 + 脸上的汗(العرق على الوجه) + 擦一下(امسحه). الظرف 快 يأتي قبل 把.", "pinyin": "Kuài bǎ liǎn shàng de hàn cā yí xià"}, {"examId": 2, "qNum": "90", "fragments": "放进/水果/冰箱里/把吃剩的/吧", "answer": "把吃剩的水果放进冰箱里吧", "rule": "A", "ruleName": "قاعدة 把 — صيغة المفعول المقدم", "explain": "把 + مفعول + فعل + اتجاه. هنا: 把 + 吃剩的水果(الفاكهة المتبقية) + 放进(ضعها في) + 冰箱里(الثلاجة) + 吧(حرف اقتراح).", "pinyin": "Bǎ chī shèng de shuǐguǒ fàng jìn bīngxiāng lǐ ba"}, {"examId": 3, "qNum": "92", "fragments": "这里的规定/把/请/告诉大家", "answer": "请把这里的规定告诉大家", "rule": "A", "ruleName": "قاعدة 把 — المفعول المقدم", "explain": "请(رجاءً) + 把 + 这里的规定(أنظمة هذا المكان) + 告诉(أخبر) + 大家(الجميع). طلب + 把 + مفعول + فعل.", "pinyin": "Qǐng bǎ zhèlǐ de guīdìng gàosù dàjiā"}, {"examId": 4, "qNum": "95", "fragments": "现金/把/信封里/妻子/放进", "answer": "妻子把现金放进信封里", "rule": "A", "ruleName": "قاعدة 把 — المفعول المقدم", "explain": "妻子(الزوجة) + 把 + 现金(النقود) + 放进(وضعت في) + 信封里(المغلف). فاعل + 把 + مفعول + فعل + اتجاه.", "pinyin": "Qīzi bǎ xiànjīn fàng jìn xìnfēng lǐ"}, {"examId": 5, "qNum": "86", "fragments": "别把/衣服/扔在/桌子上", "answer": "别把衣服扔在桌子上", "rule": "A", "ruleName": "قاعدة 把 — نهي مع 把", "explain": "别(لا) + 把 + 衣服(الملابس) + 扔在(ترميها على) + 桌子上(الطاولة). النهي 别 يأتي قبل 把. ⚠️ ملاحظة: المصدر يحتوي على 扔(réng) بدلاً من 扔(rēng=يرمي)، وهو خطأ مطبعي في الامتحان الأصلي.", "pinyin": "Bié bǎ yīfu rēng zài zhuōzi shàng"}, {"examId": 6, "qNum": "92", "fragments": "不要/给别人/千万/把钥匙", "answer": "千万不要把钥匙给别人", "rule": "A", "ruleName": "قاعدة 把 — تحذير مع 把", "explain": "千万(بأي حال) + 不要(لا) + 把 + 钥匙(المفتاح) + 给别人(تعطه لأحد). الظرف 千万不要 يأتي قبل 把.", "pinyin": "Qiānwàn bùyào bǎ yàoshi gěi biérén."}, {"examId": 8, "qNum": "94", "fragments": "把/放进/请/书/书包里", "answer": "请把书放进书包里", "rule": "A", "ruleName": "قاعدة 把 — أمر مع 把", "explain": "请(رجاءً) + 把 + 书(الكتاب) + 放进(ضعه في) + 书包里(الحقيبة). طلب + 把 + مفعول + فعل + اتجاه.", "pinyin": "Qǐng bǎ shū fàng jìn shūbāo lǐ"}, {"examId": 9, "qNum": "94", "fragments": "把/麻烦/拿出来/身份证/您", "answer": "麻烦您把身份证拿出来", "rule": "A", "ruleName": "قاعدة 把 — طلب مهذب", "explain": "麻烦(لو سمحت) + 您(أنت) + 把 + 身份证(الهوية) + 拿出来(أخرجها). طلب + 把 + مفعول + فعل.", "pinyin": "Máfan nín bǎ shēnfènzhèng ná chū lái"}, {"examId": 10, "qNum": "94", "fragments": "请你/箱子里/衣服/把/放到", "answer": "请你把衣服放到箱子里", "rule": "A", "ruleName": "قاعدة 把 — طلب", "explain": "请你(رجاءً) + 把 + 衣服(الملابس) + 放到(ضعها في) + 箱子里(الصندوق). طلب + 把 + مفعول + فعل + اتجاه.", "pinyin": "Qǐng nǐ bǎ yīfu fàng dào xiāngzi lǐ"}, {"examId": 11, "qNum": "86", "fragments": "姐姐/镜子/把/干净了/擦", "answer": "姐姐把镜子擦干净了", "rule": "A", "ruleName": "قاعدة 把 — المفعول المقدم", "explain": "姐姐(الأخت) + 把 + 镜子(المرآة) + 擦干净了(مسحتها حتى أصبحت نظيفة). فاعل + 把 + مفعول + فعل + مكمل نتيجة.", "pinyin": "Jiějie bǎ jìngzi cā gānjìng le"}, {"examId": 12, "qNum": "93", "fragments": "弄脏了/客厅里/把/他/的沙发", "answer": "他把客厅里的沙发弄脏了", "rule": "A", "ruleName": "قاعدة 把 — المفعول المقدم", "explain": "他(هو) + 把 + 客厅里(غرفة المعيشة) + 的沙发(الأريكة) + 弄脏了(وسّخها). فاعل + 把 + مفعول + فعل + نتيجة. ة: المصدر يحتوي على كلمة 按照 الزائدة وهي خطأ في الامتحان الأصلي.", "pinyin": "Tā bǎ kètīng lǐ de shāfā nòng zāng le."}, {"examId": 5, "paper": 5, "new": true, "qNum": "90", "fragments": "弟弟不小心/把/钥匙/弄丢了", "answer": "弟弟不小心把钥匙弄丢了", "rule": "A", "ruleName": "جملة 把 — المفعول المقدّم", "explain": "把 + المفعول + الفعل + مكمّل النتيجة/الاتجاه. الجملة: 弟弟不小心把钥匙弄丢了.", "pinyin": "dì di bù xiǎo xīn bǎ yào shi nòng diū le"}, {"examId": 6, "paper": 6, "new": true, "qNum": "92", "fragments": "他/把这个问题/没办法/解释/清楚", "answer": "他没办法把这个问题解释清楚", "rule": "A", "ruleName": "جملة 把 — المفعول المقدّم", "explain": "把 + المفعول + الفعل + مكمّل النتيجة/الاتجاه. الجملة: 他没办法把这个问题解释清楚.", "pinyin": "tā méi bàn fǎ bǎ zhè ge wèn tí jiě shì qīng chǔ"}, {"examId": 7, "paper": 7, "new": true, "qNum": "90", "fragments": "小李/把/租给我了/另外一个房间", "answer": "小李把另外一个房间租给我了", "rule": "A", "ruleName": "جملة 把 — المفعول المقدّم", "explain": "把 + المفعول + الفعل + مكمّل النتيجة/الاتجاه. الجملة: 小李把另外一个房间租给我了.", "pinyin": "xiǎo lǐ bǎ lìng wài yí gè fáng jiān zū gěi wǒ le"}, {"examId": 8, "paper": 8, "new": true, "qNum": "92", "fragments": "这条毛巾/放回/请把/厕所", "answer": "请把这条毛巾放回厕所", "rule": "A", "ruleName": "جملة 把 — المفعول المقدّم", "explain": "把 + المفعول + الفعل + مكمّل النتيجة/الاتجاه. الجملة: 请把这条毛巾放回厕所.", "pinyin": "qǐng bǎ zhè tiáo máo jīn fàng huí cè suǒ"}, {"examId": 9, "paper": 9, "new": true, "qNum": "95", "fragments": "爷爷/刚把/寄给了孙子/杂志", "answer": "爷爷刚把杂志寄给了孙子", "rule": "A", "ruleName": "جملة 把 — المفعول المقدّم", "explain": "把 + المفعول + الفعل + مكمّل النتيجة/الاتجاه. الجملة: 爷爷刚把杂志寄给了孙子.", "pinyin": "yé yé gāng bǎ zá zhì jì gěi le sūn zi"}, {"examId": 1, "paper": 1, "new": true, "qNum": "94", "fragments": "脏衣服/快把/脱/下来", "answer": "快把脏衣服脱下来", "rule": "A", "ruleName": "جملة 把 — المفعول المقدّم", "explain": "把 + المفعول + الفعل + مكمّل النتيجة/الاتجاه. الجملة: 快把脏衣服脱下来.", "pinyin": "kuài bǎ zāng yī fú tuō xià lái"}, {"examId": "ورقة2", "qNum": "86", "fragments": "他/把/弄丢/了/材料", "answer": "他把材料弄丢了", "rule": "A", "ruleName": "جملة 把 — المفعول المقدّم", "explain": "把字句: 把 + المفعول (材料) + الفعل (弄丢) + 了. خطؤك في الورقة: وضعت 把 في الآخر — مكانها قبل المفعول.", "pinyin": "Tā bǎ cáiliào nòngdiū le"}], "count": 18}, {"id": "bei", "code": "B", "title_zh": "被字句", "title_ar": "جملة 被 — المبني للمجهول", "pattern_zh": "受事 + 被 + 施事 + 动词 + 补语", "pattern_ar": "المتأثّر + 被 + الفاعل (اختياري) + الفعل + النتيجة", "explain_ar": "تُبرز أنّ المفعول تعرّض للفعل. الفاعل (من قام بالفعل) يأتي بعد 被 ويمكن حذفه. الظرف 都 يسبق 被.", "examples_zh": ["我的橡皮被妹妹弄丢了", "那本小说被翻译成了英文", "巧克力被妹妹吃光了"], "questions": [{"examId": 1, "qNum": "91", "fragments": "弄/我的橡皮/被妹妹/丢了", "answer": "我的橡皮被妹妹弄丢了", "rule": "B", "ruleName": "قاعدة 被 — صيغة المبني للمجهول", "explain": "المتأثر + 被 + الفاعل + فعل + نتيجة. هنا: 我的橡皮(ممحاتي) + 被 + 妹妹(أختي) + 弄丢了(أضاعتها).", "pinyin": "Wǒ de xiàngpí bèi mèimei nòng diū le"}, {"examId": 2, "qNum": "89", "fragments": "被他/照片/都/所有/整理好了", "answer": "所有照片都被他整理好了", "rule": "B", "ruleName": "قاعدة 被 — صيغة المبني للمجهول", "explain": "المتأثر + 都 + 被 + فاعل + فعل + مكمل. هنا: 所有照片(كل الصور) + 都(جميعها) + 被他(من قبله) + 整理好了(تم ترتيبها). الظرف 都 يأتي قبل 被.", "pinyin": "Suǒyǒu zhàopiàn dōu bèi tā zhěnglǐ hǎo le"}, {"examId": 3, "qNum": "88", "fragments": "弟弟/矿泉水瓶/被/丢掉了", "answer": "矿泉水瓶被弟弟丢掉了", "rule": "B", "ruleName": "قاعدة 被 — المبني للمجهول", "explain": "矿泉水瓶(زجاجة الماء) + 被 + 弟弟(الأخ الصغير) + 丢掉了(رماها). المتأثر + 被 + الفاعل + فعل + نتيجة.", "pinyin": "Kuàngquánshuǐ píng bèi dìdi diū diào le"}, {"examId": 4, "qNum": "86", "fragments": "女儿/了/登机牌/弄丢/被", "answer": "登机牌被女儿弄丢了", "rule": "B", "ruleName": "قاعدة 被 — المبني للمجهول", "explain": "登机牌(بطاقة الصعود) + 被 + 女儿(الابنة) + 弄丢(أضاعت) + 了. المتأثر + 被 + الفاعل + فعل + نتيجة.", "pinyin": "Dēngjī pái bèi nǚ'ér nòng diū le"}, {"examId": 5, "qNum": "87", "fragments": "那本小说/被/翻译成了/英文", "answer": "那本小说被翻译成了英文", "rule": "B", "ruleName": "قاعدة 被 — المبني للمجهول", "explain": "那本小说(تلك الرواية) + 被 + 翻译成了(تُرجمت إلى) + 英文(الإنجليزية). متأثر + 被 + فعل + نتيجة.", "pinyin": "Nà běn xiǎoshuō bèi fānyì chéng le Yīngwén"}, {"examId": 6, "qNum": "91", "fragments": "弄/照片/破了/被我", "answer": "照片被我弄破了", "rule": "B", "ruleName": "قاعدة 被 — المبني للمجهول", "explain": "照片(الصورة) + 被我(من قبلي) + 弄破了(أتلفتها). متأثر + 被 + فاعل + فعل + نتيجة.", "pinyin": "Zhàopiàn bèi wǒ nòng pò le."}, {"examId": 8, "qNum": "93", "fragments": "被姐姐/桌子上的/吃光/水果/了", "answer": "桌子上的水果被姐姐吃光了", "rule": "B", "ruleName": "قاعدة 被 — المبني للمجهول", "explain": "桌子上的水果(الفاكهة على الطاولة) + 被 + 姐姐(الأخت) + 吃光了(أكلتها كلها). متأثر + 被 + فاعل + فعل + مكمل.", "pinyin": "Zhuōzi shàng de shuǐguǒ bèi jiějie chīguāng le."}, {"examId": 11, "qNum": "88", "fragments": "吃光了/巧克力/被/妹妹", "answer": "巧克力被妹妹吃光了", "rule": "B", "ruleName": "قاعدة 被 — المبني للمجهول", "explain": "巧克力(الشوكولاتة) + 被 + 妹妹(الأخت) + 吃光了(أكلتها كلها). متأثر + 被 + فاعل + فعل + مكمل.", "pinyin": "Qiǎokèlì bèi mèimei chī guāng le"}, {"examId": 3, "paper": 3, "new": true, "qNum": "89", "fragments": "妹妹/被/巧克力/吃光/了", "answer": "巧克力被妹妹吃光了", "rule": "B", "ruleName": "جملة 被 — المبني للمجهول", "explain": "المتأثّر + 被 + الفاعل + الفعل + النتيجة (المبني للمجهول). الجملة: 巧克力被妹妹吃光了.", "pinyin": "qiǎo kè lì bèi mèi mèi chī guāng le"}, {"examId": 4, "paper": 4, "new": true, "qNum": "93", "fragments": "他的话/我被/感动/深深地/了", "answer": "我被他的话深深地感动了", "rule": "B", "ruleName": "جملة 被 — المبني للمجهول", "explain": "المتأثّر + 被 + الفاعل + الفعل + النتيجة (المبني للمجهول). الجملة: 我被他的话深深地感动了.", "pinyin": "wǒ bèi tā de huà shēn shēn dì gǎn dòng le"}, {"examId": 6, "paper": 6, "new": true, "qNum": "94", "fragments": "这些货物/在邮局/暂时被/存放", "answer": "这些货物暂时被存放在邮局", "rule": "B", "ruleName": "جملة 被 — المبني للمجهول", "explain": "المتأثّر + 被 + الفاعل + الفعل + النتيجة (المبني للمجهول). الجملة: 这些货物暂时被存放在邮局.", "pinyin": "zhè xiē huò wù zàn shí bèi cún fàng zài yóu jú"}, {"examId": 8, "paper": 8, "new": true, "qNum": "90", "fragments": "我/被/洗衣机/脏衣服/扔进了", "answer": "脏衣服被我扔进了洗衣机", "rule": "B", "ruleName": "جملة 被 — المبني للمجهول", "explain": "المتأثّر + 被 + الفاعل + الفعل + النتيجة (المبني للمجهول). الجملة: 脏衣服被我扔进了洗衣机.", "pinyin": "zāng yī fú bèi wǒ rēng jìn le xǐ yī jī"}, {"examId": 10, "paper": 10, "new": true, "qNum": "95", "fragments": "我/被邀请/去王小帅家/吃饺子", "answer": "我被邀请去王小帅家吃饺子", "rule": "B", "ruleName": "جملة 被 — المبني للمجهول", "explain": "المتأثّر + 被 + الفاعل + الفعل + النتيجة (المبني للمجهول). الجملة: 我被邀请去王小帅家吃饺子.", "pinyin": "wǒ bèi yāo qǐng qù wáng xiǎo shuài jiā chī jiǎo zi"}], "count": 13}, {"id": "de_degree", "code": "C", "title_zh": "得 — 程度补语", "title_ar": "الـ得 — وصف الدرجة", "pattern_zh": "动词/形容词 + 得 + 描述 / 主语 + 动词 + 宾语 + 动词 + 得 + 描述", "pattern_ar": "فعل/صفة + 得 + وصف الدرجة. مع المفعول: الفعل يتكرر مرتين", "explain_ar": "تعبّر عن مدى وصول الفعل أو الصفة. مع الأفعال المنفصلة (离合词) كـ打篮球، يتكرّر الفعل: 他打篮球打得棒极了.", "examples_zh": ["他的中文说得非常流利", "父亲激动得哭了", "一切都进行得非常顺利"], "questions": [{"examId": 1, "qNum": "86", "fragments": "父亲/哭了/得/激动", "answer": "父亲激动得哭了", "rule": "C", "ruleName": "قاعدة 得 — الدرجة والوصف", "explain": "التركيب: فعل/صفة + 得 + وصف الدرجة. هنا: 激动(متأثر) + 得 + 哭了(بكى). المعنى: الأب تأثر لدرجة البكاء.", "pinyin": "Fùqīn jīdòng de kū le"}, {"examId": 3, "qNum": "93", "fragments": "痛得/了/我的胳膊/抬不起来", "answer": "我的胳膊痛得抬不起来了", "rule": "C", "ruleName": "قاعدة 得 — وصف الدرجة", "explain": "我的胳膊(ذراعي) + 痛得(يؤلم لدرجة) + 抬不起来了(لا أستطيع رفعها). فعل + 得 + وصف الدرجة.", "pinyin": "Wǒ de gēbo tòng de tái bu qǐ lái le"}, {"examId": 4, "qNum": "87", "fragments": "非常/进行得/一切都/顺利", "answer": "一切都进行得非常顺利", "rule": "C", "ruleName": "قاعدة 得 — وصف الدرجة", "explain": "一切(كل شيء) + 都(جميعاً) + 进行得(يسير بدرجة) + 非常顺利(سلس جداً). فعل + 得 + وصف.", "pinyin": "Yīqiè dōu jìnxíng de fēicháng shùnlì"}, {"examId": 6, "qNum": "89", "fragments": "说得/非常/他的中文/流利", "answer": "他的中文说得非常流利", "rule": "C", "ruleName": "قاعدة 得 — وصف الدرجة", "explain": "他的中文(لغته الصينية) + 说得(يتحدثها بدرجة) + 非常流利(طلاقة كبيرة). موضوع + فعل + 得 + وصف.", "pinyin": "Tā de Zhōngwén shuō de fēicháng liúlì."}, {"examId": 8, "qNum": "88", "fragments": "他打/棒/打得/篮球/极了", "answer": "他打篮球打得棒极了", "rule": "C", "ruleName": "قاعدة 得 — وصف الدرجة (离合词)", "explain": "他打(هو يلعب) + 篮球(كرة السلة) + 打得(يلعب بدرجة) + 棒(ممتاز) + 极了(جداً). نمط 离合词: الفعل يتكرر مرتين، مرة مع المفعول ومرة مع 得 + الوصف.", "pinyin": "Tā dǎ lánqiú dǎ de bàng jí le."}, {"examId": 9, "qNum": "91", "fragments": "你最近/了/太厉害/得/感冒", "answer": "你最近感冒得太厉害了", "rule": "C", "ruleName": "قاعدة 得 — وصف الدرجة", "explain": "你最近(أنت مؤخراً) + 感冒得(أصبت بالزكام بدرجة) + 太厉害了(شديدة جداً). فعل + 得 + وصف.", "pinyin": "Nǐ zuìjìn gǎnmào de tài lìhai le"}, {"examId": 10, "qNum": "88", "fragments": "顺利/工作/并不/进行得", "answer": "工作进行得并不顺利", "rule": "C", "ruleName": "قاعدة 得 — وصف الدرجة", "explain": "工作(العمل) + 进行得(يسير بدرجة) + 并不顺利(ليس سلساً). فعل + 得 + نفي + وصف.", "pinyin": "Gōngzuò jìnxíng de bìng bù shùnlì."}, {"examId": 11, "qNum": "87", "fragments": "非常帅/小伙子/那个/长得", "answer": "那个小伙子长得非常帅", "rule": "C", "ruleName": "قاعدة 得 — وصف المظهر", "explain": "那个小伙子(ذلك الشاب) + 长得(مظهره بدرجة) + 非常帅(وسيم جداً). فعل + 得 + وصف.", "pinyin": "Nàge xiǎo húzi zhǎng de fēicháng shuài"}, {"examId": 12, "qNum": "95", "fragments": "得/挂/那张/有点儿低/照片", "answer": "那张照片挂得有点儿低", "rule": "C", "ruleName": "قاعدة 得 — وصف الدرجة", "explain": "那张照片(تلك الصورة) + 挂得(معلقة بدرجة) + 有点儿低(منخفضة قليلاً). فعل + 得 + وصف.", "pinyin": "Nà zhāng zhàopiàn guà de yǒudiǎnr dī."}, {"examId": 8, "paper": 8, "new": true, "qNum": "86", "fragments": "近几年公司的生意/进行/得/很顺利", "answer": "近几年公司的生意进行得很顺利", "rule": "C", "ruleName": "الـ得 — وصف الدرجة", "explain": "فعل/صفة + 得 + وصف الدرجة. الجملة: 近几年公司的生意进行得很顺利.", "pinyin": "jìn jǐ nián gōng sī de shēng yì jìn xíng dé hěn shùn lì"}, {"examId": 10, "paper": 10, "new": true, "qNum": "87", "fragments": "我的/普通话/说得/很/标准", "answer": "我的普通话说得很标准", "rule": "C", "ruleName": "الـ得 — وصف الدرجة", "explain": "فعل/صفة + 得 + وصف الدرجة. الجملة: 我的普通话说得很标准.", "pinyin": "wǒ de pǔ tōng huà shuō dé hěn biāo zhǔn"}, {"examId": 10, "paper": 10, "new": true, "qNum": "91", "fragments": "这场/及时/下得/很/雨", "answer": "这场雨下得很及时", "rule": "C", "ruleName": "الـ得 — وصف الدرجة", "explain": "فعل/صفة + 得 + وصف الدرجة. الجملة: 这场雨下得很及时.", "pinyin": "zhè chǎng yǔ xià dé hěn jí shí"}, {"examId": 1, "paper": 1, "new": true, "qNum": "86", "fragments": "举办/非常/活动/得/成功", "answer": "活动举办得非常成功", "rule": "C", "ruleName": "الـ得 — وصف الدرجة", "explain": "فعل/صفة + 得 + وصف الدرجة. الجملة: 活动举办得非常成功.", "pinyin": "huó dòng jǔ bàn dé fēi cháng chéng gōng"}], "count": 13}, {"id": "demo", "code": "D", "title_zh": "这/那 + 量词 — 指示句", "title_ar": "الإشارة في صدر الجملة (这/那 + 量词)", "pattern_zh": "这/那 + 量词 + 名词 + 状语 + 谓语", "pattern_ar": "كلمة الإشارة + كلمة العدّ + الاسم + الظرف + الخبر", "explain_ar": "عندما تبدأ الجملة بـ「هذا/ذاك + اسم」، تأتي كلمة العدّ الصحيحة (这场/这条/这种/这个/那台...) قبل الاسم مباشرة.", "examples_zh": ["这场京剧表演十分精彩", "这个新闻引起了全社会的重视", "这种情况有时会更复杂"], "questions": [{"examId": 3, "qNum": "87", "fragments": "这场/表演/京剧/十分精彩", "answer": "这场京剧表演十分精彩", "rule": "D", "ruleName": "قاعدة 这 — الإشارة أول الجملة", "explain": "这场京剧表演(هذا العرض المسرحي) يأتي أولاً كموضوع + 十分精彩(رائع جداً). 这场 تشير للموضوع فتأتي أولاً.", "pinyin": "Zhè chǎng Jīngjù biǎoyǎn shífēn jīngcǎi"}, {"examId": 5, "qNum": "91", "fragments": "这场/京剧/精彩/极了", "answer": "这场京剧精彩极了", "rule": "D", "ruleName": "قاعدة 这 — الإشارة أول الجملة", "explain": "这场京剧(هذا العرض المسرحي) + 精彩极了(رائع للغاية). 这场 كموضوع أولاً + صفة + 极了(للمبالغة).", "pinyin": "Zhè chǎng Jīngjù jīngcǎi jí le"}, {"examId": 6, "qNum": "87", "fragments": "更/有时会/复杂/这种情况", "answer": "这种情况有时会更复杂", "rule": "D", "ruleName": "قاعدة 这 — الإشارة أول الجملة", "explain": "这种情况(هذا النوع من المواقف) + 有时会(أحياناً) + 更复杂(أكثر تعقيداً). 这种 كموضوع أولاً.", "pinyin": "Zhè zhǒng qíngkuàng yǒushí huì gèng fùzá."}, {"examId": 6, "qNum": "88", "fragments": "新闻/全社会的/这个/引起了/重视", "answer": "这个新闻引起了全社会的重视", "rule": "D", "ruleName": "قاعدة 这 — الإشارة أول الجملة", "explain": "这个新闻(هذا الخبر) + 引起了(أثار) + 全社会的重视(اهتمام المجتمع بأكمله). 这个 كموضوع أولاً.", "pinyin": "Zhège xīnwén yǐnqǐle quán shèhuì de zhòngshì."}, {"examId": 7, "qNum": "93", "fragments": "教学任务/这个/重/非常/学期的", "answer": "这个学期的教学任务非常重", "rule": "D", "ruleName": "قاعدة 这 — الإشارة أول الجملة", "explain": "这个学期的教学任务(مهام التدريس هذا الفصل) + 非常重(ثقيلة جداً). 这个 كموضوع أولاً.", "pinyin": "Zhège xuéqī de jiàoxué rènwù fēicháng zhòng."}, {"examId": 8, "qNum": "89", "fragments": "是/这杯果汁/的/什么味道", "answer": "这杯果汁是什么味道的", "rule": "D", "ruleName": "قاعدة 这 + 是...的", "explain": "这杯果汁(هذا الكأس من العصير) + 是(هو) + 什么味道的(بأي نكهة). 这 أولاً + 是...的 إطار السؤال.", "pinyin": "Zhè bēi guǒzhī shì shénme wèidào de?"}, {"examId": 11, "qNum": "93", "fragments": "这些/排列的/按照/什么顺序/材料", "answer": "这些材料按照什么顺序排列的", "rule": "D", "ruleName": "قاعدة 这 — الإشارة أولاً", "explain": "这些材料(هذه المواد) + 按照(وفقاً لـ) + 什么顺序(أي ترتيب) + 排列的(مرتبة). 这些 كموضوع أولاً.", "pinyin": "Zhèxiē cáiliào ànzhào shénme shùnxù páiliè de"}, {"examId": 12, "qNum": "88", "fragments": "的注意/消息/许多人/这条/吸引了", "answer": "这条消息吸引了许多人的注意", "rule": "D", "ruleName": "قاعدة 这 — الإشارة أولاً", "explain": "这条消息(هذا الخبر) + 吸引了(جذب) + 许多人的注意(انتباه كثير من الناس). 这条 كموضوع أولاً.", "pinyin": "Zhè tiáo xiāoxi xīyǐn le xǔduō rén de zhùyì."}, {"examId": 4, "paper": 4, "new": true, "qNum": "90", "fragments": "你还剩/那本书/没看/多少/页", "answer": "那本书你还剩多少页没看", "rule": "D", "ruleName": "الإشارة في صدر الجملة (这/那 + 量词)", "explain": "تبدأ الجملة بـ「这/那 + كلمة عدّ + اسم」كموضوع. الجملة: 那本书你还剩多少页没看.", "pinyin": "nà běn shū nǐ hái shèng duō shǎo yè méi kàn"}, {"examId": 4, "paper": 4, "new": true, "qNum": "91", "fragments": "这个/塑料袋好像/破/了", "answer": "这个塑料袋好像破了", "rule": "D", "ruleName": "الإشارة في صدر الجملة (这/那 + 量词)", "explain": "تبدأ الجملة بـ「这/那 + كلمة عدّ + اسم」كموضوع. الجملة: 这个塑料袋好像破了.", "pinyin": "zhè ge sù liào dài hǎo xiàng pò le"}], "count": 10}, {"id": "shi_de", "code": "F", "title_zh": "是…的 / 是 — 判断与强调", "title_ar": "是 / 是…的 — التعريف والتأكيد", "pattern_zh": "主语 + 是 + 表语 (+ 的)", "pattern_ar": "فاعل + 是 + الخبر (+ 的)", "explain_ar": "تستخدم 是 للتعريف (هو/هي/يكون) ولتعريف الفئة. 是…的 تحيط بالعبارة المؤكَّدة (الزمان/المكان/الطريقة).", "examples_zh": ["她是一位著名的音乐家", "小王的工资是我的两倍", "哥哥是世界上最聪明的人"], "questions": [{"examId": 2, "qNum": "92", "fragments": "是/工资/小王的/我的两倍", "answer": "小王的工资是我的两倍", "rule": "F", "ruleName": "قاعدة 是...的 — إطار التأكيد", "explain": "小王的工资(راتب شياو وانغ) + 是(هو) + 我的两倍(ضعف راتبي). التركيب: الموضوع + 是 + الوصف.", "pinyin": "Xiǎo Wáng de gōngzī shì wǒ de liǎng bèi"}, {"examId": 2, "qNum": "95", "fragments": "共同的/人们/地球是/家园", "answer": "地球是人们共同的家园", "rule": "F", "ruleName": "قاعدة 是 — جملة تعريفية", "explain": "地球(الأرض) + 是(هي) + 人们共同的家园(وطن مشترك للبشرية). تركيب: فاعل + 是 + خبر.", "pinyin": "Dìqiú shì rénmen gòngtóng de jiāyuán."}, {"examId": 6, "qNum": "95", "fragments": "最/是所有人中/冷静的/她", "answer": "她是所有人中最冷静的", "rule": "F", "ruleName": "قاعدة 是...的 — التأكيد", "explain": "她(هي) + 是(تعتبر) + 所有人中(من بين الجميع) + 最冷静的(الأكثر هدوءاً). 是...的 إطار التأكيد.", "pinyin": "Tā shì suǒyǒu rén zhōng zuì lěngjìng de"}, {"examId": 7, "qNum": "88", "fragments": "人/最聪明的/哥哥是/世界上", "answer": "哥哥是世界上最聪明的人", "rule": "F", "ruleName": "قاعدة 是 — جملة تعريفية", "explain": "哥哥(الأخ الأكبر) + 是(هو) + 世界上最聪明的人(أذكى شخص في العالم). فاعل + 是 + خبر.", "pinyin": "Gēge shì shìjiè shàng zuì cōngmíng de rén."}, {"examId": 7, "qNum": "89", "fragments": "是一位/音乐家/她/著名的", "answer": "她是一位著名的音乐家", "rule": "F", "ruleName": "قاعدة 是 — جملة تعريفية", "explain": "她(هي) + 是(تعتبر) + 一位著名的音乐家(موسيقية مشهورة). فاعل + 是 + خبر.", "pinyin": "Tā shì yí wèi zhùmíng de yīnyuèjiā."}, {"examId": 9, "qNum": "90", "fragments": "的任务/保护环境/是/每个人", "answer": "保护环境是每个人的任务", "rule": "F", "ruleName": "قاعدة 是 — تعريف", "explain": "保护环境(حماية البيئة) + 是(هي) + 每个人的任务(مهمة كل شخص). موضوع + 是 + خبر.", "pinyin": "Bǎohù huánjìng shì měi gè rén de rènwù"}, {"examId": 10, "qNum": "91", "fragments": "长江是/最长的/亚洲/河", "answer": "长江是亚洲最长的河", "rule": "F", "ruleName": "قاعدة 是 — تعريف", "explain": "长江(نهر اليانغتسي) + 是(هو) + 亚洲最长的河(أطول أنهار آسيا). فاعل + 是 + خبر.", "pinyin": "Cháng Jiāng shì Yàzhōu zuì cháng de hé."}, {"examId": 3, "paper": 3, "new": true, "qNum": "94", "fragments": "自信是/条件/获得成功的/重要", "answer": "自信是获得成功的重要条件", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 自信是获得成功的重要条件.", "pinyin": "zì xìn shì huò dé chéng gōng de zhòng yào tiáo jiàn"}, {"examId": 3, "paper": 3, "new": true, "qNum": "95", "fragments": "那个座位/留的/给王教授/是专门", "answer": "那个座位是专门给王教授留的", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 那个座位是专门给王教授留的.", "pinyin": "nà ge zuò wèi shì zhuān mén gěi wáng jiào shòu liú de"}, {"examId": 4, "paper": 4, "new": true, "qNum": "92", "fragments": "上个礼拜天/我儿子是/出生/的", "answer": "我儿子是上个礼拜天出生的", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 我儿子是上个礼拜天出生的.", "pinyin": "wǒ ér zi shì shàng gè lǐ bài tiān chū shēng de"}, {"examId": 5, "paper": 5, "new": true, "qNum": "86", "fragments": "你是故意/他的/输给/吗", "answer": "你是故意输给他的吗", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 你是故意输给他的吗.", "pinyin": "nǐ shì gù yì shū gěi tā de ma"}, {"examId": 5, "paper": 5, "new": true, "qNum": "89", "fragments": "那是/消息/假/个/原来", "answer": "原来那是个假消息", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 原来那是个假消息.", "pinyin": "yuán lái nà shì gè jiǎ xiāo xī"}, {"examId": 6, "paper": 6, "new": true, "qNum": "93", "fragments": "养成的/从小/是/生活习惯", "answer": "生活习惯是从小养成的", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 生活习惯是从小养成的.", "pinyin": "shēng huó xí guàn shì cóng xiǎo yǎng chéng de"}, {"examId": 7, "paper": 7, "new": true, "qNum": "89", "fragments": "他的工资/是/竟然/我的两倍", "answer": "他的工资竟然是我的两倍", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 他的工资竟然是我的两倍.", "pinyin": "tā de gōng zī jìng rán shì wǒ de liǎng bèi"}, {"examId": 8, "paper": 8, "new": true, "qNum": "88", "fragments": "学习汉语的/预习/是一种/好方法", "answer": "预习是一种学习汉语的好方法", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 预习是一种学习汉语的好方法.", "pinyin": "yù xí shì yī zhǒng xué xí hàn yǔ de hǎo fāng fǎ"}, {"examId": 8, "paper": 8, "new": true, "qNum": "93", "fragments": "他不是/故意/我估计/这么做的", "answer": "我估计他不是故意这么做的", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 我估计他不是故意这么做的.", "pinyin": "wǒ gū jì tā bú shì gù yì zhè me zuò de"}, {"examId": 1, "paper": 1, "new": true, "qNum": "88", "fragments": "他的母亲/演员/是位/京剧", "answer": "他的母亲是位京剧演员", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 他的母亲是位京剧演员.", "pinyin": "tā de mǔ qīn shì wèi jīng jù yǎn yuán"}, {"examId": 1, "paper": 1, "new": true, "qNum": "95", "fragments": "那些数字/排列的/顺序/由小到大的/是按照", "answer": "那些数字是按照由小到大的顺序排列的", "rule": "F", "ruleName": "是 / 是…的 — التعريف والتأكيد", "explain": "إطار 是…(的) للتعريف أو التأكيد. الجملة: 那些数字是按照由小到大的顺序排列的.", "pinyin": "nà xiē shù zì shì àn zhào yóu xiǎo dào dà de shùn xù pái liè de"}], "count": 18}, {"id": "bi", "code": "E", "title_zh": "比 — 比较句", "title_ar": "جملة المقارنة 比", "pattern_zh": "A + 比 + B + 形容词/动词 + 差量", "pattern_ar": "A + 比 + B + الصفة/الفعل + مقدار الفرق", "explain_ar": "A أكثر من B في الصفة المذكورة. كمية الفرق (一倍/三公里…) تأتي في النهاية. لا يصحّ「很」في هذه الجملة.", "examples_zh": ["工资比以前增加了一倍", "那台相机的效果比这台好", "导游的收入比前几年增加了一倍"], "questions": [{"examId": 3, "qNum": "94", "fragments": "这台/效果/那台相机的/比/好", "answer": "那台相机的效果比这台好", "rule": "E", "ruleName": "قاعدة 比 — المقارنة", "explain": "那台相机的(تلك الكاميرا) + 效果(تأثيرها) + 比(مقارنة بـ) + 这台(هذه) + 好(أفضل). A的效果 + 比 + B + 好. المعنى: تأثير تلك الكاميرا أفضل من هذه.", "pinyin": "Nà tái xiàngjī de xiàoguǒ bǐ zhè tái hǎo."}, {"examId": 4, "qNum": "88", "fragments": "前几年/比/一倍/导游的收入/增加了", "answer": "导游的收入比前几年增加了一倍", "rule": "E", "ruleName": "قاعدة 比 — المقارنة", "explain": "导游的收入(دخل المرشد) + 比 + 前几年(السنوات السابقة) + 增加了一倍(زاد بمقدار الضعف). A + 比 + B + فعل + الفرق.", "pinyin": "Dǎoyóu de shōurù bǐ qián jǐ nián zēngjiā le yī bèi"}, {"examId": 9, "qNum": "93", "fragments": "去旅游的人/平时/一倍/比/多了", "answer": "去旅游的人比平时多了一倍", "rule": "E", "ruleName": "قاعدة 比 — المقارنة", "explain": "去旅游的人(المسافرون) + 比平时(مقارنة بالعادة) + 多了一倍(زادوا بمقدار الضعف). A + 比 + B + الفرق.", "pinyin": "Qù lǚyóu de rén bǐ píngshí duō le yì bèi"}, {"examId": 10, "qNum": "87", "fragments": "工资/一倍/增加了/比以前", "answer": "工资比以前增加了一倍", "rule": "E", "ruleName": "قاعدة 比 — المقارنة", "explain": "工资(الراتب) + 比以前(مقارنة بالسابق) + 增加了一倍(زاد بمقدار الضعف). A + 比 + B + فعل + الفرق.", "pinyin": "Gōngzī bǐ yǐqián zēngjiā le yī bèi."}, {"examId": 12, "qNum": "87", "fragments": "一倍/多了/数量/顾客的/比去年", "answer": "顾客的数量比去年多了一倍", "rule": "E", "ruleName": "قاعدة 比 — المقارنة", "explain": "顾客的数量(عدد العملاء) + 比去年(مقارنة بالعام الماضي) + 多了一倍(زاد بمقدار الضعف). A + 比 + B + فعل + الفرق.", "pinyin": "Gùkè de shùliàng bǐ qùnián duō le yī bèi."}, {"examId": 3, "paper": 3, "new": true, "qNum": "93", "fragments": "我感觉/今年冬天/暖和/一些/比去年", "answer": "我感觉今年冬天比去年暖和一些", "rule": "E", "ruleName": "جملة المقارنة 比", "explain": "A + 比 + B + الصفة/الفعل + مقدار الفرق. الجملة: 我感觉今年冬天比去年暖和一些.", "pinyin": "wǒ gǎn jué jīn nián dōng tiān bǐ qù nián nuǎn huo yī xiē"}, {"examId": 6, "paper": 6, "new": true, "qNum": "89", "fragments": "现在的温度/比早上/一点儿/稍微高了", "answer": "现在的温度比早上稍微高了一点儿", "rule": "E", "ruleName": "جملة المقارنة 比", "explain": "A + 比 + B + الصفة/الفعل + مقدار الفرق. الجملة: 现在的温度比早上稍微高了一点儿.", "pinyin": "xiàn zài de wēn dù bǐ zǎo shàng shāo wēi gāo le yì diǎn ér"}, {"examId": 8, "paper": 8, "new": true, "qNum": "95", "fragments": "妹妹的汉语/标准/一些/比姐姐", "answer": "妹妹的汉语比姐姐标准一些", "rule": "E", "ruleName": "جملة المقارنة 比", "explain": "A + 比 + B + الصفة/الفعل + مقدار الفرق. الجملة: 妹妹的汉语比姐姐标准一些.", "pinyin": "mèi mèi de hàn yǔ bǐ jiě jiě biāo zhǔn yī xiē"}, {"examId": 9, "paper": 9, "new": true, "qNum": "87", "fragments": "这次的错误/比/之前的/严重多了", "answer": "这次的错误比之前的严重多了", "rule": "E", "ruleName": "جملة المقارنة 比", "explain": "A + 比 + B + الصفة/الفعل + مقدار الفرق. الجملة: 这次的错误比之前的严重多了.", "pinyin": "zhè cì de cuò wù bǐ zhī qián de yán zhòng duō le"}], "count": 9}, {"id": "exist", "code": "J", "title_zh": "存在句 — 地点开头", "title_ar": "الجملة الوجودية — المكان أولاً", "pattern_zh": "地点 + 动词(着/了) + 数量 + 名词", "pattern_ar": "المكان + الفعل (مع 着/了) + عدد + اسم", "explain_ar": "لوصف ما يوجد/يحدث في مكان ما، يبدأ المكان الجملة ثم الفعل ثم ما هو موجود.", "examples_zh": ["门上挂着一条毛巾", "学校里到处开满了鲜花", "路对面有一个银行"], "questions": [{"examId": 3, "qNum": "90", "fragments": "学校里/到处/开满了/鲜花", "answer": "学校里到处开满了鲜花", "rule": "J", "ruleName": "المكان أولاً — جملة وجودية", "explain": "学校里(في المدرسة) + 到处(في كل مكان) + 开满了(تفتحت بالكامل) + 鲜花(الأزهار). المكان يبدأ الجملة.", "pinyin": "Xuéxiào lǐ dàochù kāi mǎn le xiānhuā"}, {"examId": 5, "qNum": "93", "fragments": "路对面/有/一个/银行", "answer": "路对面有一个银行", "rule": "J", "ruleName": "المكان أولاً — جملة وجودية", "explain": "路对面(مقابل الطريق) + 有(يوجد) + 一个银行(بنك واحد). المكان + 有 + الشيء.", "pinyin": "Lù duìmiàn yǒu yí gè yínháng"}, {"examId": 8, "qNum": "86", "fragments": "禁止/打/图书馆里/电话", "answer": "图书馆里禁止打电话", "rule": "J", "ruleName": "المكان أولاً — حكم", "explain": "图书馆里(في المكتبة) + 禁止(ممنوع) + 打电话(إجراء مكالمات). المكان + القاعدة.", "pinyin": "Túshūguǎn lǐ jìnzhǐ dǎ diànhuà."}, {"examId": 8, "qNum": "90", "fragments": "门上/一条/挂着/毛巾", "answer": "门上挂着一条毛巾", "rule": "J", "ruleName": "المكان أولاً — جملة وجودية", "explain": "门上(على الباب) + 挂着(معلقة) + 一条毛巾(منشفة واحدة). المكان + فعل حالة + شيء.", "pinyin": "Mén shàng guàzhe yì tiáo máojīn."}, {"examId": 9, "qNum": "87", "fragments": "那个/三瓶矿泉水/塑料袋里/有", "answer": "那个塑料袋里有三瓶矿泉水", "rule": "J", "ruleName": "المكان أولاً — جملة وجودية", "explain": "那个塑料袋里(في تلك الحقيبة البلاستيكية) + 有(يوجد) + 三瓶矿泉水(3 زجاجات ماء). المكان + 有 + عدد + شيء.", "pinyin": "Nà ge sùliàodài lǐ yǒu sān píng kuàngquán shuǐ"}, {"examId": 10, "qNum": "89", "fragments": "表格上/清楚地/电话号码/写着", "answer": "表格上清楚地写着电话号码", "rule": "J", "ruleName": "المكان أولاً", "explain": "表格上(على الاستمارة) + 清楚地(بوضوح) + 写着(مكتوب) + 电话号码(رقم الهاتف). المكان + حال + فعل + شيء.", "pinyin": "Biǎogé shàng qīngchǔ de xiě zhe diànhuà hàomǎ."}, {"examId": 9, "paper": 9, "new": true, "qNum": "91", "fragments": "加油站里/在排队/有/不少顾客", "answer": "加油站里有不少顾客在排队", "rule": "J", "ruleName": "الجملة الوجودية — المكان أولاً", "explain": "المكان يتصدّر الجملة الوجودية (有/着/了). الجملة: 加油站里有不少顾客在排队.", "pinyin": "jiā yóu zhàn lǐ yǒu bù shǎo gù kè zài pái duì"}, {"examId": "ورقة2", "qNum": "91", "fragments": "那里可以/行李/免费/寄存", "answer": "那里可以免费寄存行李", "rule": "J", "ruleName": "الجملة الوجودية — المكان أولاً", "explain": "المكان أوّلاً: 那里 + 可以 + 免费 (ظرف) + 寄存 (الفعل) + 行李 (المفعول).", "pinyin": "Nàlǐ kěyǐ miǎnfèi jìcún xíngli"}], "count": 8}, {"id": "rang_shi", "code": "K", "title_zh": "让/使 — 使役句", "title_ar": "让 / 使 — السبب والنتيجة", "pattern_zh": "A + 让/使 + B + 动作/心情", "pattern_ar": "A + 让/使 + B + الفعل/الحالة (يجعل B يفعل/يشعر بكذا)", "explain_ar": "让 شائعة في الكلام، 使 أكثر رسمية. يمكن أن تُستخدم 让 للاقتراح (让我们…).", "examples_zh": ["让我们为成功干杯", "这个消息让他非常吃惊", "踢足球使我心情愉快"], "questions": [{"examId": 5, "qNum": "95", "fragments": "他们的/爱情/故事/让人/十分感动", "answer": "他们的爱情故事让人十分感动", "rule": "K", "ruleName": "قاعدة 让 — السبب والنتيجة", "explain": "他们的爱情故事(قصة حبهم) + 让人(تجعل الناس) + 十分感动(متأثرين جداً). السبب + 让 + المتأثر + النتيجة.", "pinyin": "Tāmen de àiqíng gùshì ràng rén shífēn gǎndòng."}, {"examId": 6, "qNum": "90", "fragments": "付款/售货员/用信用卡/让我", "answer": "售货员让我用信用卡付款", "rule": "K", "ruleName": "قاعدة 让 — الطلب", "explain": "售货员(البائع) + 让(طلب من) + 我(أنا) + 用信用卡付款(الدفع ببطاقة الائتمان). فاعل + 让 + شخص + فعل.", "pinyin": "Shòuhuòyuán ràng wǒ yòng xìnyòngkǎ fùkuǎn."}, {"examId": 7, "qNum": "91", "fragments": "我们/干杯/为成功/让", "answer": "让我们为成功干杯", "rule": "K", "ruleName": "قاعدة 让 — اقتراح", "explain": "让(دعونا) + 我们(نحن) + 为成功(للنجاح) + 干杯(نشرب نخباً). 让 + شخص + فعل.", "pinyin": "Ràng wǒmen wèi chénggōng gānbēi."}, {"examId": 10, "qNum": "86", "fragments": "让我们/干杯/成功/为", "answer": "让我们为成功干杯", "rule": "K", "ruleName": "قاعدة 让 — اقتراح", "explain": "让(دعونا) + 我们(نحن) + 为成功(للنجاح) + 干杯(نشرب نخباً).", "pinyin": "Ràng wǒmen wèi chénggōng gānbēi."}, {"examId": 10, "qNum": "92", "fragments": "踢足球/愉快/使我/心情", "answer": "踢足球使我心情愉快", "rule": "K", "ruleName": "قاعدة 使 — السبب والنتيجة (مشابه لـ 让)", "explain": "踢足球(لعب كرة القدم) + 使(يجعل) + 我心情(مزاجي) + 愉快(سعيداً). السبب + 使 + المتأثر + النتيجة.", "pinyin": "Tī zúqiú shǐ wǒ xīnqíng yúkuài."}, {"examId": 12, "qNum": "94", "fragments": "这个/他/让/消息/非常吃惊", "answer": "这个消息让他非常吃惊", "rule": "K", "ruleName": "قاعدة 让 — السبب والنتيجة", "explain": "这个消息(هذا الخبر) + 让(جعل) + 他(هو) + 非常吃惊(متفاجئ جداً). السبب + 让 + المتأثر + النتيجة.", "pinyin": "Zhè ge xiāoxi ràng tā fēicháng chūjīng."}, {"examId": 5, "paper": 5, "new": true, "qNum": "88", "fragments": "母亲的/回答/让我/很吃惊", "answer": "母亲的回答让我很吃惊", "rule": "K", "ruleName": "让 / 使 — السبب والنتيجة", "explain": "A + 让/使 + B + فعل/شعور (السبب والنتيجة). الجملة: 母亲的回答让我很吃惊.", "pinyin": "mǔ qīn de huí dá ràng wǒ hěn chī jīng"}, {"examId": 6, "paper": 6, "new": true, "qNum": "91", "fragments": "妈妈的/鼓励/让/孩子/不再害怕", "answer": "妈妈的鼓励让孩子不再害怕", "rule": "K", "ruleName": "让 / 使 — السبب والنتيجة", "explain": "A + 让/使 + B + فعل/شعور (السبب والنتيجة). الجملة: 妈妈的鼓励让孩子不再害怕.", "pinyin": "mā mā de gǔ lì ràng hái zi bù zài hài pà"}, {"examId": 8, "paper": 8, "new": true, "qNum": "89", "fragments": "小伙子的/让作家/回答/很开心", "answer": "小伙子的回答让作家很开心", "rule": "K", "ruleName": "让 / 使 — السبب والنتيجة", "explain": "A + 让/使 + B + فعل/شعور (السبب والنتيجة). الجملة: 小伙子的回答让作家很开心.", "pinyin": "xiǎo huǒ zi de huí dá ràng zuò jiā hěn kāi xīn"}, {"examId": 9, "paper": 9, "new": true, "qNum": "88", "fragments": "我们的生活/使/互联网/更方便了", "answer": "互联网使我们的生活更方便了", "rule": "K", "ruleName": "让 / 使 — السبب والنتيجة", "explain": "A + 让/使 + B + فعل/شعور (السبب والنتيجة). الجملة: 互联网使我们的生活更方便了.", "pinyin": "hù lián wǎng shǐ wǒ men de shēng huó gèng fāng biàn le"}, {"examId": 9, "paper": 9, "new": true, "qNum": "94", "fragments": "大夫/让护士/给父亲/一针/打了", "answer": "大夫让护士给父亲打了一针", "rule": "K", "ruleName": "让 / 使 — السبب والنتيجة", "explain": "A + 让/使 + B + فعل/شعور (السبب والنتيجة). الجملة: 大夫让护士给父亲打了一针.", "pinyin": "dà fū ràng hù shì gěi fù qīn dǎ le yī zhēn"}, {"examId": 1, "paper": 1, "new": true, "qNum": "89", "fragments": "这个消息/都/让/所有人/很激动", "answer": "这个消息让所有人都很激动", "rule": "K", "ruleName": "让 / 使 — السبب والنتيجة", "explain": "A + 让/使 + B + فعل/شعور (السبب والنتيجة). الجملة: 这个消息让所有人都很激动.", "pinyin": "zhè ge xiāo xī ràng suǒ yǒu rén dōu hěn jī dòng"}], "count": 12}, {"id": "dui_you", "code": "P", "title_zh": "对…有/熟悉 — العلاقة", "title_ar": "对 + المتعلَّق به + يكون/يفعل", "pattern_zh": "A + 对 + B + 有 + 形容词 + 名词 / 谓语", "pattern_ar": "A + 对 + B + يملك/يكون + الخبر", "explain_ar": "对 تعني「تجاه/بالنسبة إلى». تربط بين الشخص أو الشيء وما يتعلق به (اهتمام، ثقة، إلمام، تأثير…).", "examples_zh": ["运动对身体有一定的好处", "我对赢下这场比赛有信心", "夏律师对各种法律内容非常熟悉"], "questions": [{"examId": 2, "qNum": "93", "fragments": "对环境/有很大的/森林/保护作用", "answer": "森林对环境有很大的保护作用", "rule": "P", "ruleName": "قاعدة 对...有 — العلاقة والتأثير", "explain": "森林(الغابات) + 对环境(تجاه البيئة) + 有很大的保护作用(لها دور حماية كبير).", "pinyin": "Sēnlín duì huánjìng yǒu hěn dà de bǎohù zuòyòng"}, {"examId": 4, "qNum": "94", "fragments": "熟悉/夏律师对/非常/法律内容/各种", "answer": "夏律师对各种法律内容非常熟悉", "rule": "P", "ruleName": "قاعدة 对...有 — العلاقة والتأثير", "explain": "夏律师(المحامي شيا) + 对(تجاه) + 各种法律内容(مختلف المحتويات القانونية) + 非常熟悉(ملمّ جداً).", "pinyin": "Xià lǜshī duì gè zhǒng fǎlǜ nèiróng fēicháng shúxī"}, {"examId": 8, "qNum": "87", "fragments": "有一定的/对身体/运动/好处", "answer": "运动对身体有一定的好处", "rule": "P", "ruleName": "قاعدة 对...有 — العلاقة والتأثير", "explain": "运动(الرياضة) + 对身体(للجسم) + 有一定的好处(لها فوائد معينة).", "pinyin": "Yùndòng duì shēntǐ yǒu yídìng de hǎochù."}, {"examId": 12, "qNum": "86", "fragments": "我/对/赢下/这场比赛/有信心", "answer": "我对赢下这场比赛有信心", "rule": "P", "ruleName": "قاعدة 对...有 — العلاقة والتأثير", "explain": "我(أنا) + 对(تجاه) + 赢下这场比赛(الفوز بهذه المباراة) + 有信心(واثق).", "pinyin": "Wǒ duì yíng xià zhè chǎng bǐsài yǒu xìnxīn."}, {"examId": 3, "paper": 3, "new": true, "qNum": "91", "fragments": "锻炼/对身体/有好处/坚持", "answer": "坚持锻炼对身体有好处", "rule": "P", "ruleName": "对 + المتعلَّق به + يكون/يفعل", "explain": "A + 对 + B + يملك/يكون… (علاقة أو تأثير). الجملة: 坚持锻炼对身体有好处.", "pinyin": "jiān chí duàn liàn duì shēn tǐ yǒu hǎo chù"}, {"examId": 4, "paper": 4, "new": true, "qNum": "89", "fragments": "他俩对/这件事的/态度/相反/完全", "answer": "他俩对这件事的态度完全相反", "rule": "P", "ruleName": "对 + المتعلَّق به + يكون/يفعل", "explain": "A + 对 + B + يملك/يكون… (علاقة أو تأثير). الجملة: 他俩对这件事的态度完全相反.", "pinyin": "tā liǎ duì zhè jiàn shì de tài dù wán quán xiāng fǎn"}, {"examId": 7, "paper": 7, "new": true, "qNum": "92", "fragments": "他们/讨论/这个计划/对/进行了", "answer": "他们对这个计划进行了讨论", "rule": "P", "ruleName": "对 + المتعلَّق به + يكون/يفعل", "explain": "A + 对 + B + يملك/يكون… (علاقة أو تأثير). الجملة: 他们对这个计划进行了讨论.", "pinyin": "tā men duì zhè ge jì huà jìn xíng le tǎo lùn"}, {"examId": "ورقة2", "qNum": "93", "fragments": "我的/感谢大家/对/十分/支持", "answer": "十分感谢大家对我的支持", "rule": "P", "ruleName": "对 + المتعلَّق به + يكون/يفعل", "explain": "对: 十分 (ظرف) + 感谢 + 大家 + [对我的支持]. 对 تربط «الدعم» بالمتلقّي (对我的支持 = دعمهم لي).", "pinyin": "Shífēn gǎnxiè dàjiā duì wǒ de zhīchí"}], "count": 8}, {"id": "nan_dao", "code": "I", "title_zh": "难道…吗 — 反问句", "title_ar": "难道…吗 — السؤال البلاغي/الاستنكاري", "pattern_zh": "难道 + 主语 + 谓语 + 吗?", "pattern_ar": "难道 + الفاعل + الخبر + 吗؟", "explain_ar": "سؤال مُنكِر يحمل معنى التأكيد العكسي. ترجمة تقريبية: «أَيُعقَل أن…؟» — تأتي 难道 في بداية الجملة.", "examples_zh": ["你难道一点儿都不吃惊吗", "难道你没有提前预习吗", "难道我解释得不明白吗"], "questions": [{"examId": 1, "qNum": "89", "fragments": "你难道/一点儿/不/吗/吃惊/都", "answer": "你难道一点儿都不吃惊吗", "rule": "I", "ruleName": "قاعدة 难道 — السؤال البلاغي", "explain": "难道 تأتي في بداية الجملة للاستفهام الإنكاري. التركيب: 难道 + 一点儿都不(أبداً لا) + 吃惊(متفاجئ) + 吗؟ المعنى: أيعقل أنك لست متفاجئاً أبداً؟", "pinyin": "Nǐ nándào yì diǎnr dōu bù chījīng ma"}, {"examId": 4, "qNum": "92", "fragments": "解释/不明白/难道我/得/吗", "answer": "难道我解释得不明白吗", "rule": "I", "ruleName": "قاعدة 难道 — السؤال البلاغي + قاعدة 得", "explain": "难道(أيعقل) تبدأ الجملة + 我解释得(شرحي بدرجة) + 不明白(غير واضح) + 吗؟ جمع بين 难道 و V+得+وصف.", "pinyin": "Nándào wǒ jiěshì de bù míngbai ma"}, {"examId": 12, "qNum": "91", "fragments": "你/预习吗/提前/难道/没有", "answer": "难道你没有提前预习吗", "rule": "I", "ruleName": "قاعدة 难道 — السؤال البلاغي", "explain": "难道(أيعقل) + 你没有(أنك لم) + 提前预习(تراجع مسبقاً) + 吗؟ 难道 تأتي أول الجملة.", "pinyin": "Nándào nǐ méiyǒu tíqián yùxí ma?"}], "count": 3}, {"id": "yue", "code": "N", "title_zh": "越来越 — التدرج", "title_ar": "越来越 + صفة — التدرج التدريجي", "pattern_zh": "主语 + (变得) + 越来越 + 形容词", "pattern_ar": "الفاعل + (变得) + 越来越 + الصفة", "explain_ar": "«أكثر فأكثر…». يمكن إضافة 变得 قبلها (یُصبح/یتحوّل). مثل: 北京会变得越来越美丽.", "examples_zh": ["这里的环境越来越漂亮", "环境条件变得越来越好了", "北京会变得越来越美丽"], "questions": [{"examId": 5, "qNum": "92", "fragments": "北京/会变得/越来越/美丽", "answer": "北京会变得越来越美丽", "rule": "N", "ruleName": "قاعدة 越来越 — التدرج + 变得", "explain": "北京(بكين) + 会变得(ستصبح) + 越来越(أكثر فأكثر) + 美丽(جمالاً). التركيب: 变得 + 越来越 + صفة = تحول تدريجي.", "pinyin": "Běijīng huì biàn dé yuè lái yuè měilì"}, {"examId": 9, "qNum": "86", "fragments": "这里的/漂亮/越来越/环境", "answer": "这里的环境越来越漂亮", "rule": "N", "ruleName": "قاعدة 越来越 — التدرج", "explain": "这里的环境(بيئة هذا المكان) + 越来越(أكثر فأكثر) + 漂亮(جمالاً). التركيب: موضوع + 越来越 + صفة = تدرج في الصفة.", "pinyin": "Zhè lǐ de huánjìng yuè lái yuè piàoliang"}, {"examId": 10, "qNum": "90", "fragments": "变得/条件/环境/了/越来越好", "answer": "环境条件变得越来越好了", "rule": "N", "ruleName": "قاعدة 越来越 — التدرج + 变得", "explain": "环境条件(الظروف البيئية) + 变得(أصبحت) + 越来越好了(أفضل فأفضل). التركيب: 变得 + 越来越 + صفة = تحول تدريجي.", "pinyin": "Huánjìng tiáojiàn biàn de yuè lái yuè hǎo le."}, {"examId": 7, "paper": 7, "new": true, "qNum": "86", "fragments": "网上购物/越来越/变得/流行了", "answer": "网上购物变得越来越流行了", "rule": "N", "ruleName": "越来越 + صفة — التدرج التدريجي", "explain": "(变得) + 越来越 + صفة — تدرّج تصاعدي. الجملة: 网上购物变得越来越流行了.", "pinyin": "wǎng shàng gòu wù biàn dé yuè lái yuè liú xíng le"}], "count": 4}, {"id": "di", "code": "S", "title_zh": "地 — تحويل الصفة لحال", "title_ar": "الـ地 — صفة + 地 = ظرف", "pattern_zh": "状语(形容词 + 地) + 动词", "pattern_ar": "الظرف (صفة + 地) + الفعل", "explain_ar": "لتحويل الصفة إلى ظرف يصف كيفية حدوث الفعل، تُضاف 地 بعدها. تأتي الصفة بـ地 قبل الفعل.", "examples_zh": ["妈妈仔细地整理着头发", "我能流利地说两种语言"], "questions": [{"examId": 3, "qNum": "86", "fragments": "整理着/仔细地/妈妈/头发", "answer": "妈妈仔细地整理着头发", "rule": "S", "ruleName": "قاعدة 地 — تحويل الصفة لحال", "explain": "妈妈(الأم) + 仔细地(بعناية) + 整理着(ترتب) + 头发(الشعر). الحال (仔细地) يأتي قبل الفعل.", "pinyin": "Māma zǐxì de zhěnglǐ zhe tóufa"}, {"examId": 11, "qNum": "94", "fragments": "我能/两种语言/说/流利地", "answer": "我能流利地说两种语言", "rule": "S", "ruleName": "قاعدة 地 — تحويل الصفة لحال", "explain": "我(أنا) + 能(أستطيع) + 流利地(بطلاقة) + 说(أتحدث) + 两种语言(لغتين). الحال (流利地) يأتي قبل الفعل.", "pinyin": "Wǒ néng liúlì de shuō liǎng zhǒng yǔyán."}], "count": 2}, {"id": "yong", "code": "R", "title_zh": "用 — استخدام الأداة", "title_ar": "用 + الأداة — بِأَيِّ شيء؟", "pattern_zh": "主语 + 用 + 工具 + 动词 + 宾语", "pattern_ar": "الفاعل + 用 + الأداة + الفعل + المفعول", "explain_ar": "تُترجم بـ«باستخدام/بـ». تأتي قبل الفعل لتحديد بأيّ أداة يقع الفعل. كثيراً ما تُجمع مع 把.", "examples_zh": ["请先用笔填写表格", "快用毛巾把水擦一擦"], "questions": [{"examId": 2, "qNum": "86", "fragments": "快/用毛巾/把/水/擦一擦", "answer": "快用毛巾把水擦一擦", "rule": "R", "ruleName": "قاعدة 把 مع 用 — استخدام أداة لفعل شيء محدد", "explain": "快(بسرعة) + 用毛巾(بالمنشفة) + 把水(الماء) + 擦一擦(امسحه). التركيب: ظرف + 用+أداة + 把+مفعول + فعل. استخدام 把 يجعل الجملة أكثر طبيعية لأن \"擦\" يمسح شيئاً محدداً.", "pinyin": "Kuài yòng máojīn bǎ shuǐ cā yī cā"}, {"examId": 9, "qNum": "95", "fragments": "笔/先用/请/填写表格", "answer": "请先用笔填写表格", "rule": "R", "ruleName": "قاعدة 用 — استخدام الأداة", "explain": "请(رجاءً) + 先(أولاً) + 用笔(بالقلم) + 填写(املأ) + 表格(الاستمارة).", "pinyin": "Qǐng xiān yòng bǐ tiánxiě biǎogé"}, {"examId": 1, "paper": 1, "new": true, "qNum": "87", "fragments": "安全/用网上/銀行付款/吗", "answer": "用网上銀行付款安全吗", "rule": "R", "ruleName": "用 + الأداة — بِأَيِّ شيء؟", "explain": "用 + الأداة + الفعل + المفعول (استخدام أداة). الجملة: 用网上銀行付款安全吗.", "pinyin": "yòng wǎng shàng yín xíng fù kuǎn ān quán ma"}], "count": 3}, {"id": "gei_liu", "code": "Q", "title_zh": "给…留下…印象 — الانطباع", "title_ar": "给 + الشخص + 留下 + الانطباع", "pattern_zh": "A + 给 + B + 留下 + 形容词 + 印象", "pattern_ar": "A + 给 + B + 留下 + الصفة + 印象 (ينطبع كذا)", "explain_ar": "قالب ثابت لوصف الانطباع الذي يخلِّفه شخص أو شيء عند آخر. الكلمة 印象 محورية.", "examples_zh": ["那本书给我留下很深的印象", "服务员的态度给我留下了很深的印象"], "questions": [{"examId": 8, "qNum": "91", "fragments": "留下/那本书/很深的/给我/印象", "answer": "那本书给我留下很深的印象", "rule": "Q", "ruleName": "قاعدة 给...留下 — الانطباع والتأثر", "explain": "那本书(ذلك الكتاب) + 给我(أعطاني) + 留下(ترك) + 很深的印象(انطباعاً عميقاً).", "pinyin": "Nà běn shū gěi wǒ liúxià hěn shēn de yìnxiàng."}, {"examId": 10, "qNum": "93", "fragments": "留下了/服务员的态度/印象/给我/很深的", "answer": "服务员的态度给我留下了很深的印象", "rule": "Q", "ruleName": "قاعدة 给...留下 — الانطباع والتأثر", "explain": "服务员的态度(أسلوب النادل) + 给我(أعطاني) + 留下了(ترك) + 很深的印象(انطباعاً عميقاً).", "pinyin": "Fúwùyuán de tàidù gěi wǒ liú xià le hěn shēn de yìnxiàng."}], "count": 2}, {"id": "daodi", "code": "U", "title_zh": "到底 / 究竟 — التأكيد على السؤال", "title_ar": "到底 / 究竟 — السؤال المُلحّ", "pattern_zh": "到底/究竟 + 疑问句", "pattern_ar": "到底/究竟 + جملة سؤال", "explain_ar": "تُضاف لزيادة الإلحاح والاستفسار: «بالضبط/في النهاية ماذا؟». لا تُستخدم مع 吗 في نفس الجملة.", "examples_zh": ["到底是谁在不停地笑", "他们俩究竟有什么误会"], "questions": [{"examId": 5, "qNum": "88", "fragments": "到底/是谁/在不停地/笑", "answer": "到底是谁在不停地笑", "rule": "U", "ruleName": "قاعدة 到底 — السؤال المؤكد", "explain": "到底(بالضبط/في النهاية) + 是谁(من) + 在不停地笑(يضحك بلا توقف)؟ 到底 تعبر عن الإلحاح في السؤال.", "pinyin": "Dàodǐ shì shéi zài bù tíng de xiào"}, {"examId": 12, "qNum": "90", "fragments": "俩/误会/有什么/究竟/他们", "answer": "他们俩究竟有什么误会", "rule": "U", "ruleName": "قاعدة 究竟 — السؤال المؤكد", "explain": "他们俩(هما الاثنان) + 究竟(بالضبط) + 有什么误会(أي سوء تفاهم بينهما)؟ 究竟 تعبر عن الإلحاح.", "pinyin": "Tāmen liǎ jiūjìng yǒu shénme wùhuì?"}], "count": 2}, {"id": "yi_jiu", "code": "27", "title_zh": "一…就 — التسلسل السريع", "title_ar": "一 + فعل1 + 就 + فعل2 — بمجرّد أن", "pattern_zh": "主语 + 一 + V1 + 就 + V2", "pattern_ar": "الفاعل + 一 + الفعل١ + 就 + الفعل٢", "explain_ar": "«بمجرّد أن یحصل V1، یقع V2 فوراً». الفعلان للموضوع نفسه عادةً.", "examples_zh": ["奶奶一躺下就不停地咳嗽"], "questions": [{"examId": 1, "qNum": "90", "fragments": "奶奶一躺下/咳嗽/不停/地/就", "answer": "奶奶一躺下就不停地咳嗽", "rule": "27", "ruleName": "قاعدة 一...就 — التسلسل السريع", "explain": "一V1就V2 = بمجرد أن... حصل. هنا: 一躺下(بمجرد أن تستلقي) + 就(فوراً) + 不停地咳嗽(تسعل بلا توقف).", "pinyin": "Nǎinai yì tǎng xià jiù bù tíng de ké sou"}], "count": 1}, {"id": "zhi_you", "code": "6", "title_zh": "只有…才 — الشرط الحصري", "title_ar": "只有 … + 才 — الشرط الوحيد", "pattern_zh": "只有 + 条件 + 才 + 结果", "pattern_ar": "只有 + الشرط + 才 + النتيجة", "explain_ar": "«فقط إذا… عندئذٍ…». 才 لا يمكن حذفها.", "examples_zh": ["只有百分之二的人能够应聘成功"], "questions": [{"examId": 1, "qNum": "95", "fragments": "只有/人/百分之二的/应聘成功/能够", "answer": "只有百分之二的人能够应聘成功", "rule": "6", "ruleName": "قاعدة 只有...才 — الشرط الحصري", "explain": "只有(فقط) + 百分之二的人(2% من الناس) + 能够(يستطيعون) + 应聘成功(النجاح في التوظيف). 只有 تحدد الشرط الوحيد.", "pinyin": "Zhǐyǒu bǎifēn zhī èr de rén nénggòu yìngpìn chénggōng"}], "count": 1}, {"id": "zai_jiu", "code": "M", "title_zh": "再…就 — الشرط والنتيجة", "title_ar": "再 + الإجراء + 就 + النتيجة", "pattern_zh": "再 + 动作 + 就 + 结果", "pattern_ar": "再 + الإجراء + 就 + النتيجة", "explain_ar": "تستخدم لربط شرط محدد (إذا فعلتَ كذا) بنتيجة فورية (فستجد كذا).", "examples_zh": ["再走三公里就有一个加油站"], "questions": [{"examId": 1, "qNum": "87", "fragments": "一个加油站/再走/就有/三公里", "answer": "再走三公里就有一个加油站", "rule": "M", "ruleName": "قاعدة 再...就 — الشرط والنتيجة", "explain": "再走三公里(امشِ 3 كم أخرى) + 就有(ستجد) + 一个加油站(محطة وقود). التركيب: شرط + 就 + نتيجة.", "pinyin": "Zài zǒu sān gōnglǐ jiù yǒu yí gè jiāyóu zhàn"}], "count": 1}, {"id": "zhengzai", "code": "T", "title_zh": "正在 — الفعل المستمر", "title_ar": "正在 + الفعل — يفعل الآن", "pattern_zh": "主语 + 正在 + 动词 + 宾语", "pattern_ar": "الفاعل + 正在 + الفعل + المفعول", "explain_ar": "تعبر عن استمرار الفعل في اللحظة الحالية. بدائلها: 在 وحدها أو إضافة 呢 في النهاية.", "examples_zh": ["老师正在打印材料"], "questions": [{"examId": 5, "qNum": "89", "fragments": "老师/正在/打印/材料", "answer": "老师正在打印材料", "rule": "T", "ruleName": "قاعدة 正在 — الفعل المستمر", "explain": "老师(المعلم) + 正在(يقوم حالياً بـ) + 打印(طباعة) + 材料(المواد). تركيب الفعل المستمر.", "pinyin": "Lǎoshī zhèngzài dǎyìn cáiliào"}, {"examId": 3, "paper": 3, "new": true, "qNum": "90", "fragments": "他们好像/在/商量/什么事情", "answer": "他们好像在商量什么事情", "rule": "T", "ruleName": "正在 + الفعل — يفعل الآن", "explain": "正在/在 + فعل — فعل مستمرّ الآن. الجملة: 他们好像在商量什么事情.", "pinyin": "tā men hǎo xiàng zài shāng liáng shén me shì qíng"}, {"examId": 7, "paper": 7, "new": true, "qNum": "87", "fragments": "正在/教学质量/学校/努力/提高", "answer": "学校正在努力提高教学质量", "rule": "T", "ruleName": "正在 + الفعل — يفعل الآن", "explain": "正在/在 + فعل — فعل مستمرّ الآن. الجملة: 学校正在努力提高教学质量.", "pinyin": "xué xiào zhèng zài nǔ lì tí gāo jiào xué zhì liàng"}], "count": 3}, {"id": "cong_dao", "code": "O", "title_zh": "从…到 — من...إلى", "title_ar": "从 + النقطة الأولى + 到 + الثانية", "pattern_zh": "从 + A + 到 + B + 谓语", "pattern_ar": "من نقطة + إلى نقطة + الفعل/الوصف", "explain_ar": "تستخدم للمسافة، الزمن، أو التحوّل من حالة إلى أخرى.", "examples_zh": ["从公司到地铁站大约有三公里"], "questions": [{"examId": 6, "qNum": "93", "fragments": "大约有/从公司/三公里/到地铁站", "answer": "从公司到地铁站大约有三公里", "rule": "O", "ruleName": "قاعدة 从...到 — من...إلى", "explain": "من الشركة) + 到地铁站(إلى محطة المترو) + 大约有(يوجد تقريباً) + 三公里(3 كم). التركيب: 从 + مكان A + 到 + مكان B + المسافة/الوقت.", "pinyin": "Cóng gōngsī dào dìtiě zhàn dàyuē yǒu sān gōnglǐ."}], "count": 1}, {"id": "general", "code": "عام", "title_zh": "基本句型 — الجمل الأساسية", "title_ar": "التراكيب العامة — فاعل + فعل + مفعول", "pattern_zh": "主语 + 谓语 + 宾语 (+ 状语)", "pattern_ar": "الترتيب الكلاسيكي: فاعل + فعل + مفعول، مع ظرف اختياري", "explain_ar": "الترتيب الأساسي للجملة الصينية. تشمل الجمل الإخبارية، التعريفية، الطلبية، وجمل الفعل الناقص.", "examples_zh": ["学生们来自不同的国家", "同事之间要互相尊重", "保护环境是每个人的任务"], "questions": [{"examId": 1, "qNum": "88", "fragments": "判断/老师想证明/学生的/是对的", "answer": "老师想证明学生的判断是对的", "rule": "عام", "ruleName": "جملة فعلية مركبة", "explain": "老师(المعلم) + 想证明(يريد إثبات) + 学生的判断(حكم الطالب) + 是对的(صحيح). فاعل + فعل + مفعول به (جملة اسمية).", "pinyin": "Lǎoshī xiǎng zhèngmíng xuésheng de pànduàn shì duì de"}, {"examId": 1, "qNum": "93", "fragments": "精彩的/大量观众/表演/吸引了", "answer": "精彩的表演吸引了大量观众", "rule": "عام", "ruleName": "فاعل + فعل + مفعول", "explain": "精彩的表演(العرض الرائع) + 吸引了(جذب) + 大量观众(عدداً كبيراً من المشاهدين). تركيب بسيط: فاعل + فعل + مفعول.", "pinyin": "Jīngcǎi de biǎoyǎn xīyǐn le dàliàng guānzhòng"}, {"examId": 1, "qNum": "94", "fragments": "我/正好相反/意见/和教授的", "answer": "我和教授的意见正好相反", "rule": "عام", "ruleName": "تركيب المقارنة والتوصيف", "explain": "我(أنا) + 和教授的(مع الأستاذ) + 意见(الرأي) + 正好相反(متعاكسان تماماً). الفاعل ثم المقارنة.", "pinyin": "Wǒ hé jiàoshòu de yìjiàn zhènghǎo xiāngfǎn"}, {"examId": 2, "qNum": "87", "fragments": "实在/大腿/没有/我的/力气了", "answer": "我的大腿实在没有力气了", "rule": "عام", "ruleName": "فاعل + حال + فعل", "explain": "我的大腿(فخذي) + 实在(حقاً) + 没有力气了(لم تعد فيها قوة). الموضوع أولاً ثم الوصف.", "pinyin": "Wǒ de dàtuǐ shízài méiyǒu lìqi le"}, {"examId": 2, "qNum": "88", "fragments": "请/乱/别/扔垃圾", "answer": "请别乱扔垃圾", "rule": "عام", "ruleName": "جملة طلب ونهي", "explain": "请(رجاءً) + 别(لا) + 乱扔(ترمي عشوائياً) + 垃圾(القمامة). التركيب: 请别 + فعل + مفعول.", "pinyin": "Qǐng bié luàn rēng lājī"}, {"examId": 2, "qNum": "91", "fragments": "家里的/卖了七块六毛钱/矿泉水瓶", "answer": "家里的矿泉水瓶卖了七块六毛钱", "rule": "عام", "ruleName": "فاعل + فعل + مبلغ", "explain": "家里的矿泉水瓶(زجاجات الماء في المنزل) + 卖了(بيعت بـ) + 七块六毛钱(7.6 يوان).", "pinyin": "Jiā lǐ de kuàngquán shuǐ píng mài le qī kuài liù máo qián"}, {"examId": 2, "qNum": "94", "fragments": "电脑密码/我/也/新改的/太复杂了", "answer": "我新改的电脑密码也太复杂了", "rule": "عام", "ruleName": "موضوع + حال + صفة", "explain": "我新改的电脑密码(كلمة مرور الكمبيوتر الجديدة التي غيرتها) + 也(أيضاً) + 太复杂了(معقدة جداً).", "pinyin": "Wǒ xīn gǎi de diànnǎo mìmǎ yě tài fùzá le."}, {"examId": 3, "qNum": "89", "fragments": "哪里/出口/高速公路的/在", "answer": "高速公路的出口在哪里", "rule": "عام", "ruleName": "سؤال عن المكان", "explain": "高速公路的出口(مخرج الطريق السريع) + 在哪里(أين يقع؟). الموضوع أولاً ثم السؤال عن المكان.", "pinyin": "Gāosù gōnglù de chūkǒu zài nǎlǐ"}, {"examId": 3, "qNum": "91", "fragments": "重视自己的/人们/确实/得/健康问题", "answer": "人们确实得重视自己的健康问题", "rule": "عام", "ruleName": "فاعل + ظرف + 得 + فعل", "explain": "人们(الناس) + 确实(فعلاً) + 得(يجب) + 重视(الاهتمام بـ) + 自己的健康问题(مشاكلهم الصحية). 得 هنا بمعنى 'يجب'.", "pinyin": "Rénmen quèshí de zhòngshì zìjǐ de jiànkāng wèntí"}, {"examId": 3, "qNum": "95", "fragments": "尤其/广告/吸引人/杂志第三页的", "answer": "杂志第三页的广告尤其吸引人", "rule": "عام", "ruleName": "موضوع + ظرف + فعل", "explain": "杂志第三页的广告(إعلان الصفحة الثالثة من المجلة) + 尤其(بشكل خاص) + 吸引人(يجذب الانتباه). الموضوع أولاً.", "pinyin": "Zázhì dì sān yè de guǎnggào yóuqí xīyǐn rén."}, {"examId": 4, "qNum": "89", "fragments": "停车/入口/禁止/高速公路", "answer": "高速公路入口禁止停车", "rule": "عام", "ruleName": "مكان + حكم", "explain": "高速公路入口(مدخل الطريق السريع) + 禁止停车(ممنوع الوقوف). المكان أولاً ثم القاعدة.", "pinyin": "Gāosù gōnglù rùkǒu jìnzhǐ tíngchē"}, {"examId": 4, "qNum": "90", "fragments": "数量增加/国内航班/了/首都机场的", "answer": "首都机场的国内航班数量增加了", "rule": "عام", "ruleName": "فاعل + فعل", "explain": "首都机场的国内航班(الرحلات الداخلية في مطار العاصمة) + 数量增加了(ازداد عددها).", "pinyin": "Shǒudū jīchǎng de guónèi hángbān shùliàng zēngjiā le"}, {"examId": 4, "qNum": "91", "fragments": "奶奶的/有礼貌/特别/孙子", "answer": "奶奶的孙子特别有礼貌", "rule": "عام", "ruleName": "فاعل + ظرف + صفة", "explain": "奶奶的孙子(حفيد الجدة) + 特别(بشكل خاص) + 有礼貌(مؤدب). الموضوع أولاً ثم الوصف.", "pinyin": "Nǎinai de sūnzi tèbié yǒu lǐmào"}, {"examId": 4, "qNum": "93", "fragments": "没有/公司的重视/引起/安全问题", "answer": "安全问题没有引起公司的重视", "rule": "عام", "ruleName": "فاعل + نفي + فعل + مفعول", "explain": "安全问题(مشاكل السلامة) + 没有引起(لم تلفت) + 公司的重视(اهتمام الشركة).", "pinyin": "Ānquán wèntí méiyǒu yǐnqǐ gōngsī de zhòngshì"}, {"examId": 5, "qNum": "90", "fragments": "家人的/支持/非常/重要", "answer": "家人的支持非常重要", "rule": "عام", "ruleName": "موضوع + صفة", "explain": "家人的支持(دعم الأسرة) + 非常重要(مهم جداً). الموضوع أولاً ثم الوصف.", "pinyin": "Jiārén de zhīchí fēicháng zhòngyào"}, {"examId": 5, "qNum": "94", "fragments": "他/向妈妈保证/不再/乱/发脾气了", "answer": "他向妈妈保证不再乱发脾气了", "rule": "عام", "ruleName": "فاعل + 向 + شخص + فعل", "explain": "他(هو) + 向妈妈(لأمه) + 保证(وعد) + 不再乱发脾气了(لن يغضب عشوائياً مرة أخرى).", "pinyin": "Tā xiàng māma bǎozhèng bù zài luàn fā píqì le."}, {"examId": 6, "qNum": "86", "fragments": "顺便/吗/你可以/一份材料/帮我取", "answer": "你可以顺便帮我取一份材料吗", "rule": "عام", "ruleName": "جملة طلب مهذبة", "explain": "你可以(هل يمكنك) + 顺便(بالمناسبة/أثناء ذلك) + 帮我取(تجلب لي) + 一份材料(مادة واحدة) + 吗؟", "pinyin": "Nǐ kěyǐ shùnbiàn bāng wǒ qǔ yí fèn cáiliào ma?"}, {"examId": 6, "qNum": "94", "fragments": "不同的/学生们/国家/来自", "answer": "学生们来自不同的国家", "rule": "عام", "ruleName": "فاعل + فعل + مفعول", "explain": "学生们(الطلاب) + 来自(يأتون من) + 不同的国家(دول مختلفة).", "pinyin": "Xuéshengmen láizì bùtóng de guójiā"}, {"examId": 7, "qNum": "86", "fragments": "按时间/的先后顺序/安排座位/我会", "answer": "我会按时间的先后顺序安排座位", "rule": "عام", "ruleName": "فاعل + فعل مساعد + طريقة + فعل", "explain": "我(أنا) + 会(سوف) + 按时间的先后顺序(حسب الترتيب الزمني) + 安排座位(أرتب المقاعد).", "pinyin": "Wǒ huì àn shíjiān de xiānhòu shùnxù ānpái zuòwèi."}, {"examId": 7, "qNum": "87", "fragments": "他的/我们尊重/儿子希望/选择", "answer": "儿子希望我们尊重他的选择", "rule": "عام", "ruleName": "تركيب مركب", "explain": "儿子(الابن) + 希望(يأمل) + 我们尊重(أن نحترم) + 他的(له) + 选择(الاختيار). المعنى: الابن يأمل أن نحترم اختياره.", "pinyin": "Érzi xīwàng wǒmen zūnzhòng tā de xuǎnzé."}, {"examId": 7, "qNum": "90", "fragments": "不再/的/我们/听他/任何解释", "answer": "我们不再听他的任何解释", "rule": "عام", "ruleName": "فاعل + نفي + فعل", "explain": "我们(نحن) + 不再(لم نعد) + 听(نستمع إلى) + 他的任何解释(أي تفسير منه).", "pinyin": "Wǒmen bù zài tīng tā de rènhé jiěshì."}, {"examId": 7, "qNum": "92", "fragments": "的/盘子里/凉了/水果", "answer": "盘子里的水果凉了", "rule": "عام", "ruleName": "موضوع + صفة + تغير", "explain": "盘子里的水果(الفاكهة في الطبق) + 凉了(بردت). الموضوع أولاً ثم التغير.", "pinyin": "Pánzi lǐ de shuǐguǒ liáng le."}, {"examId": 7, "qNum": "94", "fragments": "奇怪/这个故事/有点儿/杂志上的", "answer": "杂志上的这个故事有点儿奇怪", "rule": "عام", "ruleName": "موضوع + صفة", "explain": "杂志上的这个故事(هذه القصة في المجلة) + 有点儿奇怪(غريبة بعض الشيء).", "pinyin": "Zázhì shàng de zhè ge gùshi yǒu diǎnr qíguài."}, {"examId": 7, "qNum": "95", "fragments": "成为/你/优秀学生/祝贺", "answer": "祝贺你成为优秀学生", "rule": "عام", "ruleName": "تهنئة", "explain": "祝贺(مبارك) + 你(لك) + 成为(أصبحت) + 优秀学生(طالباً متميزاً).", "pinyin": "Zhùhè nǐ chéngwéi yōuxiù xuésheng."}, {"examId": 8, "qNum": "92", "fragments": "我的/不够/汉语水平/理想", "answer": "我的汉语水平不够理想", "rule": "عام", "ruleName": "موضوع + نفي + صفة", "explain": "我的汉语水平(مستواي في الصينية) + 不够理想(ليس مثالياً بما فيه الكفاية).", "pinyin": "Wǒ de Hànyǔ shuǐpíng búgòu lǐxiǎng."}, {"examId": 8, "qNum": "95", "fragments": "跟谁/那个小伙子/打招呼/在", "answer": "那个小伙子在跟谁打招呼", "rule": "عام", "ruleName": "سؤال — من", "explain": "那个小伙子(ذلك الشاب) + 在(يقوم حالياً بـ) + 跟谁(مع من) + 打招呼(يحيّي). فاعل + 在 + فعل.", "pinyin": "Nàge xiǎo húzi zài gēn shéi dǎ zhāohu"}, {"examId": 9, "qNum": "88", "fragments": "她养成了/的好习惯/早睡/每天", "answer": "她养成了每天早睡的好习惯", "rule": "عام", "ruleName": "فاعل + فعل + مفعول مركب", "explain": "她(هي) + 养成了(اكتسبت) + 每天早睡的好习惯(عادة النوم المبكر يومياً الجيدة).", "pinyin": "Tā yǎng chéng le měi tiān zǎo shuì de hǎo xíguàn"}, {"examId": 9, "qNum": "89", "fragments": "同事/互相/尊重/之间/要", "answer": "同事之间要互相尊重", "rule": "عام", "ruleName": "موضوع + فعل مساعد + فعل", "explain": "同事之间(بين الزملاء) + 要(يجب) + 互相尊重(الاحترام المتبادل).", "pinyin": "Tóngshì zhī jiān yào hù xiāng zūnzhòng"}, {"examId": 9, "qNum": "92", "fragments": "吗/了/你给老师/发短信", "answer": "你给老师发短信了吗", "rule": "عام", "ruleName": "سؤال — هل", "explain": "你(أنت) + 给老师(للمعلم) + 发短信了(أرسلت رسالة) + 吗(هل)؟", "pinyin": "Nǐ gěi lǎoshī fā duǎnxìn le ma"}, {"examId": 10, "qNum": "95", "fragments": "出去/天气/今天的/运动/不适合", "answer": "今天的天气不适合出去运动", "rule": "عام", "ruleName": "موضوع + نفي + فعل", "explain": "今天的天气(طقس اليوم) + 不适合(غير مناسب لـ) + 出去运动(الخروج للرياضة).", "pinyin": "Jīntiān de tiānqì bù shìhé chūqù yùndòng"}, {"examId": 11, "qNum": "89", "fragments": "有着/哥哥/生活习惯/良好的", "answer": "哥哥有着良好的生活习惯", "rule": "عام", "ruleName": "فاعل + فعل + مفعول", "explain": "哥哥(الأخ) + 有着(يمتلك) + 良好的生活习惯(عادات حياتية جيدة).", "pinyin": "Gēge yǒuzhe liánghǎo de shēnghuó xíguàn"}, {"examId": 11, "qNum": "90", "fragments": "想一个/复杂点儿/你再/吧/的密码", "answer": "你再想一个复杂点儿的密码吧", "rule": "عام", "ruleName": "اقتراح", "explain": "你(أنت) + 再(مرة أخرى) + 想一个(فكر في) + 复杂点儿的(أكثر تعقيداً) + 密码(كلمة مرور) + 吧(حرف اقتراح).", "pinyin": "Nǐ zài xiǎng yīgè fùzá diǎnr de mìmǎ ba"}, {"examId": 11, "qNum": "91", "fragments": "你的/太好了/实在是/主意", "answer": "你的主意实在是太好了", "rule": "عام", "ruleName": "موضوع + تأكيد + صفة", "explain": "你的主意(فكرتك) + 实在是(حقاً) + 太好了(ممتازة جداً).", "pinyin": "Nǐ de zhǔyi shì tài hǎo le"}, {"examId": 11, "qNum": "92", "fragments": "养了/奶奶在/很多植物/客厅里", "answer": "奶奶在客厅里养了很多植物", "rule": "عام", "ruleName": "فاعل + مكان + فعل + مفعول", "explain": "奶奶(الجدة) + 在客厅里(في غرفة المعيشة) + 养了(ربت) + 很多植物(نباتات كثيرة).", "pinyin": "Nǎinai zài kètīng lǐ yǎng le hěn duō zhíwù"}, {"examId": 11, "qNum": "95", "fragments": "公司的/他/招聘要求/完全符合", "answer": "他完全符合公司的招聘要求", "rule": "عام", "ruleName": "فاعل + ظرف + فعل + مفعول", "explain": "他(هو) + 完全(تماماً) + 符合(يستوفي) + 公司的招聘要求(متطلبات التوظيف في الشركة).", "pinyin": "Tā wánquán fúhé gōngsī de zhāopìn yāoqiú."}, {"examId": 12, "qNum": "89", "fragments": "打扫/拒绝/厕所/弟弟/去", "answer": "弟弟拒绝去打扫厕所", "rule": "عام", "ruleName": "فاعل + فعل + فعل مركب", "explain": "弟弟(الأخ الأصغر) + 拒绝(رفض) + 去打扫(الذهاب لتنظيف) + 厕所(الحمام).", "pinyin": "Dìdi jùjué qù dǎsǎo cèsuǒ."}, {"examId": 12, "qNum": "92", "fragments": "海洋馆/爷爷/参观过/去/从来没", "answer": "爷爷从来没去参观过海洋馆", "rule": "عام", "ruleName": "فاعل + 从来没 + فعل", "explain": "爷爷(الجد) + 从来没(لم يسبق له أبداً) + 去参观过(أن زار) + 海洋馆(الأكواريوم).", "pinyin": "Yéye cónglái méi qù cānguān guò hǎiyángguǎn."}, {"examId": 3, "paper": 3, "new": true, "qNum": "86", "fragments": "你这次/出差/顺利/吗", "answer": "你这次出差顺利吗", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 你这次出差顺利吗.", "pinyin": "nǐ zhè cì chū chāi shùn lì ma"}, {"examId": 3, "paper": 3, "new": true, "qNum": "87", "fragments": "我想/听听你们俩/的/意见", "answer": "我想听听你们俩的意见", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 我想听听你们俩的意见.", "pinyin": "wǒ xiǎng tīng tīng nǐ men liǎ de yì jiàn"}, {"examId": 3, "paper": 3, "new": true, "qNum": "88", "fragments": "她/降落/航班刚刚/乘坐的", "answer": "她乘坐的航班刚刚降落", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 她乘坐的航班刚刚降落.", "pinyin": "tā chéng zuò de háng bān gāng gāng jiàng luò"}, {"examId": 3, "paper": 3, "new": true, "qNum": "92", "fragments": "这次调查/左右/三个月/进行了", "answer": "这次调查进行了三个月左右", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 这次调查进行了三个月左右.", "pinyin": "zhè cì diào chá jìn xíng le sān gè yuè zuǒ yòu"}, {"examId": 4, "paper": 4, "new": true, "qNum": "86", "fragments": "弟弟将来/想/做/一名/警察", "answer": "弟弟将来想做一名警察", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 弟弟将来想做一名警察.", "pinyin": "dì di jiāng lái xiǎng zuò yī míng jǐng chá"}, {"examId": 4, "paper": 4, "new": true, "qNum": "87", "fragments": "你/买的/葡萄太酸/了", "answer": "你买的葡萄太酸了", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 你买的葡萄太酸了.", "pinyin": "nǐ mǎi de pú táo tài suān le"}, {"examId": 4, "paper": 4, "new": true, "qNum": "88", "fragments": "比赛/祝贺你/赢/得了", "answer": "祝贺你赢得了比赛", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 祝贺你赢得了比赛.", "pinyin": "zhù hè nǐ yíng dé le bǐ sài"}, {"examId": 4, "paper": 4, "new": true, "qNum": "94", "fragments": "这种牙膏/使用/很/适合儿童", "answer": "这种牙膏很适合儿童使用", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 这种牙膏很适合儿童使用.", "pinyin": "zhè zhǒng yá gāo hěn shì hé ér tóng shǐ yòng"}, {"examId": 4, "paper": 4, "new": true, "qNum": "95", "fragments": "他最后/不得不/放弃原来的/想法", "answer": "他最后不得不放弃原来的想法", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 他最后不得不放弃原来的想法.", "pinyin": "tā zuì hòu bù dé bù fàng qì yuán lái de xiǎng fǎ"}, {"examId": 5, "paper": 5, "new": true, "qNum": "87", "fragments": "你戴这个/眼镜/很/好看", "answer": "你戴这个眼镜很好看", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 你戴这个眼镜很好看.", "pinyin": "nǐ dài zhè ge yǎn jìng hěn hǎo kàn"}, {"examId": 5, "paper": 5, "new": true, "qNum": "91", "fragments": "你最好/先/听听大夫的/意见", "answer": "你最好先听听大夫的意见", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 你最好先听听大夫的意见.", "pinyin": "nǐ zuì hǎo xiān tīng tīng dà fū de yì jiàn"}, {"examId": 5, "paper": 5, "new": true, "qNum": "92", "fragments": "她来自/一个/美丽/的/海边城市", "answer": "她来自一个美丽的海边城市", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 她来自一个美丽的海边城市.", "pinyin": "tā lái zì yí gè měi lì de hǎi biān chéng shì"}, {"examId": 5, "paper": 5, "new": true, "qNum": "93", "fragments": "那位作者/拒绝了我们/的/邀请", "answer": "那位作者拒绝了我们的邀请", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 那位作者拒绝了我们的邀请.", "pinyin": "nà wèi zuò zhě jù jué le wǒ men de yāo qǐng"}, {"examId": 5, "paper": 5, "new": true, "qNum": "94", "fragments": "你帮我/查一下这趟/航班的/信息", "answer": "你帮我查一下这趟航班的信息", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 你帮我查一下这趟航班的信息.", "pinyin": "nǐ bāng wǒ chá yī xià zhè tàng háng bān de xìn xī"}, {"examId": 5, "paper": 5, "new": true, "qNum": "95", "fragments": "我们/才完成/原计划的/百分之五十", "answer": "我们才完成原计划的百分之五十", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 我们才完成原计划的百分之五十.", "pinyin": "wǒ men cái wán chéng yuán jì huà de bǎi fēn zhī wǔ shí"}, {"examId": 6, "paper": 6, "new": true, "qNum": "86", "fragments": "我/弹了/弹钢琴/三年了", "answer": "我弹钢琴弹了三年了", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 我弹钢琴弹了三年了.", "pinyin": "wǒ tán gāng qín dàn le sān nián le"}, {"examId": 6, "paper": 6, "new": true, "qNum": "87", "fragments": "她说的/实际/话/不符合", "answer": "她说的话不符合实际", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 她说的话不符合实际.", "pinyin": "tā shuō de huà bù fú hé shí jì"}, {"examId": 6, "paper": 6, "new": true, "qNum": "88", "fragments": "他/已经/向我/道歉了", "answer": "他已经向我道歉了", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 他已经向我道歉了.", "pinyin": "tā yǐ jīng xiàng wǒ dào qiàn le"}, {"examId": 6, "paper": 6, "new": true, "qNum": "90", "fragments": "这种/电脑/已经/卖/光了", "answer": "这种电脑已经卖光了", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 这种电脑已经卖光了.", "pinyin": "zhè zhǒng diàn nǎo yǐ jīng mài guāng le"}, {"examId": 6, "paper": 6, "new": true, "qNum": "95", "fragments": "请你们/快/点儿/完成作业", "answer": "请你们快点儿完成作业", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 请你们快点儿完成作业.", "pinyin": "qǐng nǐ men kuài diǎn ér wán chéng zuò yè"}, {"examId": 7, "paper": 7, "new": true, "qNum": "88", "fragments": "请各位/下车准备/乘客/提前做好", "answer": "请各位乘客提前做好下车准备", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 请各位乘客提前做好下车准备.", "pinyin": "qǐng gè wèi chéng kè tí qián zuò hǎo xià chē zhǔn bèi"}, {"examId": 7, "paper": 7, "new": true, "qNum": "91", "fragments": "玛丽常常/聚会/跟那些/老同学", "answer": "玛丽常常跟那些老同学聚会", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 玛丽常常跟那些老同学聚会.", "pinyin": "mǎ lì cháng cháng gēn nà xiē lǎo tóng xué jù huì"}, {"examId": 7, "paper": 7, "new": true, "qNum": "93", "fragments": "很多人/缺少/发现美/的眼睛", "answer": "很多人缺少发现美的眼睛", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 很多人缺少发现美的眼睛.", "pinyin": "hěn duō rén quē shǎo fā xiàn měi de yǎn jīng"}, {"examId": 7, "paper": 7, "new": true, "qNum": "94", "fragments": "肯定/合适/不太/直接拒绝", "answer": "直接拒绝肯定不太合适", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 直接拒绝肯定不太合适.", "pinyin": "zhí jiē jù jué kěn dìng bù tài hé shì"}, {"examId": 7, "paper": 7, "new": true, "qNum": "95", "fragments": "气候条件/会根据/而改变/植物的样子", "answer": "植物的样子会根据气候条件而改变", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 植物的样子会根据气候条件而改变.", "pinyin": "zhí wù de yàng zi huì gēn jù qì hòu tiáo jiàn ér gǎi biàn"}, {"examId": 8, "paper": 8, "new": true, "qNum": "87", "fragments": "他/连重点知识/都没/记下来", "answer": "他连重点知识都没记下来", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 他连重点知识都没记下来.", "pinyin": "tā lián zhòng diǎn zhī shí dōu méi jì xià lái"}, {"examId": 8, "paper": 8, "new": true, "qNum": "91", "fragments": "一遍/导游/又重新/解释了", "answer": "导游又重新解释了一遍", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 导游又重新解释了一遍.", "pinyin": "dǎo yóu yòu chóng xīn jiě shì le yī biàn"}, {"examId": 8, "paper": 8, "new": true, "qNum": "94", "fragments": "可怜的人/得到/总能/大家的同情", "answer": "可怜的人总能得到大家的同情", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 可怜的人总能得到大家的同情.", "pinyin": "kě lián de rén zǒng néng dé dào dà jiā de tóng qíng"}, {"examId": 9, "paper": 9, "new": true, "qNum": "86", "fragments": "我建议/咱们/先预习/语法知识", "answer": "我建议咱们先预习语法知识", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 我建议咱们先预习语法知识.", "pinyin": "wǒ jiàn yì zán men xiān yù xí yǔ fǎ zhī shí"}, {"examId": 9, "paper": 9, "new": true, "qNum": "89", "fragments": "小伙子的/心情/又激动/既兴奋", "answer": "小伙子的心情既兴奋又激动", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 小伙子的心情既兴奋又激动.", "pinyin": "xiǎo huǒ zi de xīn qíng jì xīng fèn yòu jī dòng"}, {"examId": 9, "paper": 9, "new": true, "qNum": "90", "fragments": "咖啡的/味道/挺/苦的", "answer": "咖啡的味道挺苦的", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 咖啡的味道挺苦的.", "pinyin": "kā fēi de wèi dào tǐng kǔ de"}, {"examId": 9, "paper": 9, "new": true, "qNum": "92", "fragments": "博士能/按时毕业/只有/百分之五十的", "answer": "只有百分之五十的博士能按时毕业", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 只有百分之五十的博士能按时毕业.", "pinyin": "zhǐ yǒu bǎi fēn zhī wǔ shí de bó shì néng àn shí bì yè"}, {"examId": 9, "paper": 9, "new": true, "qNum": "93", "fragments": "报名材料/都得/打印/所有的", "answer": "所有的报名材料都得打印", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 所有的报名材料都得打印.", "pinyin": "suǒ yǒu de bào míng cái liào dōu dé dǎ yìn"}, {"examId": 10, "paper": 10, "new": true, "qNum": "86", "fragments": "我的心情/没有/从来/那么复杂过", "answer": "我的心情从来没有那么复杂过", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 我的心情从来没有那么复杂过.", "pinyin": "wǒ de xīn qíng cóng lái méi yǒu nà me fù zá guò"}, {"examId": 10, "paper": 10, "new": true, "qNum": "88", "fragments": "张师傅好像/忘记银行卡/密码/了", "answer": "张师傅好像忘记银行卡密码了", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 张师傅好像忘记银行卡密码了.", "pinyin": "zhāng shī fù hǎo xiàng wàng jì yín háng kǎ mì mǎ le"}, {"examId": 10, "paper": 10, "new": true, "qNum": "89", "fragments": "老师/鼓励同学们/积极回答/问题", "answer": "老师鼓励同学们积极回答问题", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 老师鼓励同学们积极回答问题.", "pinyin": "lǎo shī gǔ lì tóng xué men jī jí huí dá wèn tí"}, {"examId": 10, "paper": 10, "new": true, "qNum": "90", "fragments": "通知/说/比赛/推迟了", "answer": "通知说比赛推迟了", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 通知说比赛推迟了.", "pinyin": "tōng zhī shuō bǐ sài tuī chí le"}, {"examId": 10, "paper": 10, "new": true, "qNum": "92", "fragments": "这篇/文章的/小云/觉得/内容很有趣", "answer": "小云觉得这篇文章的内容很有趣", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 小云觉得这篇文章的内容很有趣.", "pinyin": "xiǎo yún jué de zhè piān wén zhāng de nèi róng hěn yǒu qù"}, {"examId": 10, "paper": 10, "new": true, "qNum": "93", "fragments": "当/老师/要有/耐心", "answer": "当老师要有耐心", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 当老师要有耐心.", "pinyin": "dāng lǎo shī yào yǒu nài xīn"}, {"examId": 10, "paper": 10, "new": true, "qNum": "94", "fragments": "请/大使馆/提前/10分钟/到", "answer": "请提前10分钟到大使馆", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 请提前10分钟到大使馆.", "pinyin": "qǐng tí qián 1 0 fēn zhōng dào dà shǐ guǎn"}, {"examId": 1, "paper": 1, "new": true, "qNum": "90", "fragments": "他们/4个/谈了差不多/小时", "answer": "他们谈了差不多4个小时", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 他们谈了差不多4个小时.", "pinyin": "tā men tán le chà bu duō 4 gè xiǎo shí"}, {"examId": 1, "paper": 1, "new": true, "qNum": "91", "fragments": "那家公司的/严格/管理/挺/的", "answer": "那家公司的管理挺严格的", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 那家公司的管理挺严格的.", "pinyin": "nà jiā gōng sī de guǎn lǐ tǐng yán gé de"}, {"examId": 1, "paper": 1, "new": true, "qNum": "92", "fragments": "高速公路上/随便/不能/停车", "answer": "高速公路上不能随便停车", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 高速公路上不能随便停车.", "pinyin": "gāo sù gōng lù shàng bù néng suí biàn tíng chē"}, {"examId": 1, "paper": 1, "new": true, "qNum": "93", "fragments": "这棵树的/叶子/要/掉光/了", "answer": "这棵树的叶子要掉光了", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "الترتيب الأساسي: فاعل + فعل + مفعول (+ ظرف). الجملة: 这棵树的叶子要掉光了.", "pinyin": "zhè kē shù de yè zi yào diào guāng le"}, {"examId": "ورقة2", "qNum": "87", "fragments": "我/传真机坏了/以为/这台", "answer": "我以为这台传真机坏了", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "我 + 以为 (الفعل) + [这台传真机坏了] جملة مفعوليّة. 这台 = 这 + كلمة عدّ تلتصق بالاسم.", "pinyin": "Wǒ yǐwéi zhè tái chuánzhēnjī huài le"}, {"examId": "ورقة2", "qNum": "88", "fragments": "他的/普通话/标准/不太", "answer": "他的普通话不太标准", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "他的 + 普通话 (الموضوع) + 不太 (ظرف درجة) + 标准 (صفة). 不太 تأتي قبل الصفة مباشرة.", "pinyin": "Tā de pǔtōnghuà bú tài biāozhǔn"}, {"examId": "ورقة2", "qNum": "89", "fragments": "这次活动的/一万/参加人数/已超过", "answer": "这次活动的参加人数已超过一万", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "这次活动的 + 参加人数 (الموضوع) + 已 (ظرف «قد») + 超过 + 一万. 已 قبل الفعل.", "pinyin": "Zhè cì huódòng de cānjiā rénshù yǐ chāoguò yíwàn"}, {"examId": "ورقة2", "qNum": "90", "fragments": "你/祝贺/国际电影大奖/获得了", "answer": "祝贺你获得了国际电影大奖", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "祝贺 (فعل) + 你 + 获得了 + 国际电影大奖. المخاطَب 你 يأتي بعد فعل التهنئة مباشرة.", "pinyin": "Zhùhè nǐ huòdé le guójì diànyǐng dàjiǎng"}, {"examId": "ورقة2", "qNum": "92", "fragments": "每个民族/都/有自己的/特点", "answer": "每个民族都有自己的特点", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "每个民族 (الموضوع) + 都 (ظرف «جميعاً») + 有 + 自己的特点. 都 قبل الفعل.", "pinyin": "Měi gè mínzú dōu yǒu zìjǐ de tèdiǎn"}, {"examId": "ورقة2", "qNum": "94", "fragments": "它们/之间的/是什么/区别", "answer": "它们之间的区别是什么", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "它们 (ضمير يرجع لسابق) + 之间的 + 区别 (الموضوع) + 是什么.", "pinyin": "Tāmen zhī jiān de qūbié shì shénme"}, {"examId": "ورقة2", "qNum": "95", "fragments": "每小时900公里/是/飞行速度大约/现在的", "answer": "现在的飞行速度大约是每小时900公里", "rule": "عام", "ruleName": "التراكيب العامة — فاعل + فعل + مفعول", "explain": "现在的 + 飞行速度 (الموضوع) + 大约 (ظرف «تقريبًا») + 是 + 每小时900公里.", "pinyin": "Xiànzài de fēixíng sùdù dàyuē shì měi xiǎoshí jiǔbǎi gōnglǐ"}], "count": 88}];
+
+/* ===================== structural signals (meaning-free) ===================== */
+/* cls: front | tail | adv | attach | pair | back ; t = trigger substrings (all must appear) */
+const SIGNALS = [
+  // ---- FRONT (المرساة — تتصدّر) ----
+  {z:'这/那 (+量/这些/那些)', cls:'front', t:['这'], x:['这么','这样','这种程度'], r:'<b>الإشارة + (كلمة عدّ/些) + اسم</b> (<span class="zhk">这场</span><span class="zhk">那条</span><span class="zhk">这些</span><span class="zhk">那些</span>) هي الموضوع فتتصدّر الجملة. <b>这些/那些</b> أيضاً تتصدّر (عكس الضمير 它).'},
+  {z:'随着', cls:'front', pos:'start', t:['随着'], r:'تحدّد الخلفية/التغيُّر فتأتي <b>أوّل الجملة</b>.'},
+  {z:'各位 / 欢迎', cls:'front', t:['各位'], r:'نداء وترحيب — يفتتح الجملة، <u>وقد يسبقه</u> <span class="zhk">请</span> (请各位乘客…). فالموضع الأوّل قد يكون 请.'},
+  {z:'以前 (وقت)', cls:'front', t:['以前'], x:['比以前','到以前','以前的'], r:'ظرف زمن، كثيراً ما <b>يتصدّر</b>. تنبيه: بعد <span class="zhk">比</span> يصير مفعولاً (比以前 = «ممّا قبل») فلا يتصدّر.'},
+  {z:'平时 (وقت معتاد)', cls:'front', t:['平时'], x:['比平时','到平时'], r:'«عادةً/في الأوقات العاديّة» — كثيراً ما يتصدّر، لكن بعد <span class="zhk">比</span> يكون مفعولاً (比平时).'},
+  {z:'原来 (اتّضح)', cls:'front', t:['原来'], x:['原来的'], r:'بمعنى «اتّضح أنّ» <b>قد تتصدّر</b> الجملة (原来那是…). أمّا <span class="zhk">原来的</span> (الأصلي) فهي صفة قبل اسم ولا تتصدّر.'},
+  {z:'难怪', cls:'front', t:['难怪'], r:'«لا عجب» — <b>تتصدّر جملة الاستنتاج</b> (难怪你这么高兴). السبب يسبقها في السياق، لا داخل الجملة نفسها.'},
+
+  // ---- TAIL (الذيل — لاحقة النهاية) ----
+  {z:'吗', cls:'tail', pos:'end', t:['吗'], r:'لاحقة استفهام نعم/لا — <b>آخر الجملة دائماً</b>، تليها ؟'},
+  {z:'吧', cls:'tail', pos:'end', t:['吧'], r:'لاحقة اقتراح/تأكيد ناعم — <b>آخر الجملة</b>.'},
+  {z:'呢', cls:'tail', pos:'end', t:['呢'], r:'لاحقة سؤال/استمرار — <b>آخر الجملة</b>.'},
+
+  // ---- ADV (ظرف — بعد الفاعل وقبل الفعل، لا يأتي آخراً) ----
+  {z:'都', cls:'adv', t:['都'], r:'«جميعاً» — قبل الفعل، و<b>تسبق</b> <span class="zhk">把</span> و<span class="zhk">被</span> إن وُجدت.'},
+  {z:'也 / 就 / 才 / 再', cls:'adv', t:['就'], r:'ظروف ربط — قبل الفعل، لا تأتي آخراً. <b class="zh">才</b> تأتي قبل النتيجة في <span class="zhk">只有…才</span>.'},
+  {z:'正在 / 在', cls:'adv', t:['正在'], r:'علامة الفعل المستمرّ — <b>قبل الفعل مباشرة</b>.'},
+  {z:'不 / 没', cls:'adv', t:['没'], r:'النفي — قبل الفعل. <span class="zhk">没…过</span> = نفي تجربة ماضية.'},
+  {z:'千万 / 马上 / 完全', cls:'adv', t:['千万'], r:'ظرف تأكيد — قبل الفعل أو قبل <span class="zhk">把</span>.'},
+  {z:'竟然 / 已经', cls:'adv', t:['竟然'], r:'ظرف حالة/زمن — بعد الفاعل وقبل الفعل.'},
+  {z:'曾经', cls:'adv', t:['曾经'], r:'«سبق أن» — ظرف تجربة ماضية، <b>بعد الفاعل وقبل الفعل</b> (我曾经去过)، ولا يتصدّر الجملة.'},
+  {z:'往往 / 常常 / 经常', cls:'adv', t:['常常'], r:'ظرف تكرار — <b>بعد الفاعل وقبل الفعل</b> (玛丽常常…)، وليس بالضرورة أوّل الجملة، ولا يأتي آخراً.'},
+  {z:'往往', cls:'adv', t:['往往'], r:'ظرف تكرار — بعد الفاعل وقبل الفعل، لا يتصدّر ولا يُختَم به.'},
+  {z:'不得不 / 应该 / 会', cls:'adv', t:['不得不'], r:'فعل مساعد (مودال) — قبل الفعل الرئيسي.'},
+
+  // ---- ATTACH (لاصقة — تلتصق بكلمة) ----
+  {z:'把 + 宾', cls:'attach', t:['把'], r:'<span class="zhk">把</span> تخطف المفعول قبل الفعل. الصيغة: <b>主 + 把 + 宾 + 动 + 补</b>. الفعل لا يأتي وحده.'},
+  {z:'被 + 施事', cls:'attach', t:['被'], r:'<span class="zhk">被</span> للمبني للمجهول. الصيغة: <b>المتأثّر + 被 + الفاعل + الفعل + المكمّل</b>.'},
+  {z:'V + 得 (درجة)', cls:'attach', t:['得'], x:['觉得','记得','值得','获得','懂得','显得','免得','省得','舍不得','怪不得','不得不','来得及','等得'], r:'<b class="zh">得</b> الدرجيّة تلتصق <b>بالفعل مباشرة</b> (说得، 痛得)، يليها وصف الدرجة. (ليست 得 التي داخل 觉得/记得…)'},
+  {z:'地 + V (حال)', cls:'attach', t:['地'], x:['地球','地方','地铁','地图','土地','地址','地点','草地','各地','地区','当地','地上','地下','地里'], r:'<b class="zh">地</b> تحوّل الصفة إلى حال: <b>صفة + 地 + فعل</b> (仔细地看). (ليست 地 التي في 地方/地球…)'},
+  {z:'方位词 里 / 上 / 中', cls:'attach', t:['里'], r:'<span class="zhk">里/上/中/下</span> لاحقة موضع تلتصق <b>بعد اسم المكان</b> (信封里، 冰箱里). وإن كانت الجملة وجوديّة (مكان + 有/着/动) تصدّر المكانَ كلَّه.'},
+  {z:'离', cls:'attach', t:['离'], x:['离开','距离','离婚'], r:'للمسافة: <b>المكان A + 离 + المكان B + المسافة</b>.'},
+  {z:'由 … 组成', cls:'attach', t:['由','组成'], r:'«يتكوّن من»: الموضوع + <span class="zhk">由</span> + الأجزاء + <span class="zhk">组成</span> (أخيراً).'},
+
+  // ---- PAIR (زوج روابط — ترتيب ثابت) ----
+  {z:'不但/不仅 … 还/而且', cls:'pair', t:['不但'], r:'«ليس فقط… بل أيضاً». الأوّل <b>قبل</b> الثاني دائماً.'},
+  {z:'只有 … 才', cls:'pair', t:['只有','才'], r:'الشرط مع <span class="zhk">只有</span> أوّلاً، و<b class="zh">才</b> قبل النتيجة. لا تُحذف 才.'},
+  {z:'如果/要是 … 就', cls:'pair', t:['如果'], r:'الشرط (<span class="zhk">如果/要是</span>) أوّلاً ثمّ النتيجة مع <span class="zhk">就</span>.'},
+  {z:'既然 … 那么', cls:'pair', t:['既然'], r:'الحقيقة أوّلاً (<span class="zhk">既然</span>) ثمّ الاستنتاج (<span class="zhk">那么</span>).'},
+  {z:'一 … 就', cls:'pair', t:['一','就'], r:'«بمجرّد أن… حصل فوراً»: <span class="zhk">一</span> + فعل١ + <span class="zhk">就</span> + فعل٢.'},
+  {z:'越来越', cls:'adv', t:['越来越'], r:'تدرّج «أكثر فأكثر»: (变得) + <span class="zhk">越来越</span> + صفة (+ 了). تأتي قبل الصفة.'},
+  {z:'连 … 都/也', cls:'pair', t:['连'], r:'تأكيد «حتى…»: <b>主 + 连 + 宾 + 都/也 + 动</b>.'},
+  {z:'从 … 到', cls:'pair', t:['从','到'], r:'مدى زمني/مكاني: <span class="zhk">从</span> + البداية + <span class="zhk">到</span> + النهاية.'},
+  {z:'是 … 的', cls:'pair', t:['是','的'], r:'إطار تأكيد على ظرف (زمن/مكان/طريقة/فاعل): الموضوع + <span class="zhk">是</span> + التفصيل + <span class="zhk">的</span> (تُغلق 的 الإطار).'},
+  {z:'对 … 有/熟悉', cls:'pair', t:['对'], x:['对面','对方','反对','面对','对话','对不起'], r:'علاقة بين شيء وآخر: الموضوع + <span class="zhk">对</span> + المتعلَّق + <span class="zhk">有/熟悉/感兴趣</span>.'},
+  {z:'让 / 使', cls:'pair', t:['让'], r:'تسبيب: <b>السبب + 让/使 + المتأثّر + فعل/صفة</b>. السبب أوّلاً.'},
+  {z:'给 … 留下 … 印象', cls:'pair', t:['留下'], r:'الانطباع: المتسبِّب + <span class="zhk">给</span> + الشخص + <span class="zhk">留下</span> + (很深的) <span class="zhk">印象</span>.'},
+
+  // ---- BACK (لا تأتي أوّلاً / تعتمد على ما قبلها) ----
+  {z:'但 / 可是 / 不过 / 却', cls:'back', t:['但'], r:'«لكن» — <b>لا تتصدّر أبداً</b>. الفكرة الأصليّة قبلها، التناقض بعدها.'},
+  {z:'所以 / 因此', cls:'back', t:['所以'], r:'«لذلك» — تُقدّم النتيجة، وتأتي في <b>الجملة الثانية</b> بعد السبب.'},
+  {z:'于是', cls:'back', t:['于是'], r:'«فـ/وهكذا» — نتيجة سرديّة، لا تأتي أوّلاً.'},
+  {z:'其实', cls:'back', t:['其实'], r:'«في الحقيقة» — غالباً بعد الفاعل؛ تصحّح اعتقاداً سابقاً، ولا يُختَم بها.'},
+  {z:'相反', cls:'back', t:['相反'], r:'«على العكس» — لا بدّ من جملة معاكسة <u>قبلها</u>.'},
+  {z:'它 / 它们', cls:'back', t:['它'], x:['其它'], r:'ضمير يرجع لمذكور سابق في النصّ. كثيرًا ما يكون في الوسط، لكنّه <b>قد يتصدّر كفاعل</b> (مثل 它们之间的区别是什么). للتمييز: 这些/那些 إشارة تتصدّر دائمًا.'},
+  {z:'甚至', cls:'back', t:['甚至'], r:'تصعيد «حتى إنّ…» — يحتاج عنصراً أضعف قبله، وقد يأتي وسطاً، ولا يتصدّر الجملة المنفردة.'},
+];
+
+/* rule-code → primary structural cue (meaning-free), merged into drill hints */
+const RULECUE = {
+  'A':'<span class="zhk">把</span>字句: <b>主 + 把 + 宾 + 动 + 补</b> (得/到/进/完/好/了). الفعل لا يأتي وحده.',
+  'B':'<span class="zhk">被</span>字句: <b>المتأثّر + 被 + الفاعل + الفعل + المكمّل</b>.',
+  'C':'<span class="zhk">得</span> الدرجي: <b>主 + 动 + 得 + الوصف</b>. 得 تلتصق بالفعل مباشرة.',
+  'D':'<span class="zhk">这/那 + 量词 + اسم</span> يتصدّر الجملة كموضوع.',
+  'E':'<span class="zhk">比</span>: <b>A + 比 + B + صفة/فعل + الفرق</b>. الفرق أخيراً.',
+  'F':'<span class="zhk">是…的</span>: الموضوع + 是 + التفصيل + 的.',
+  'J':'الجملة الوجوديّة: <b>المكان أوّلاً</b> + 有/着 + شيء.',
+  'K':'<span class="zhk">让/使</span>: السبب أوّلاً + المتأثّر + فعل/صفة.',
+  'P':'<span class="zhk">对</span>: الموضوع + 对 + المتعلَّق + 有/熟悉.',
+  'I':'<span class="zhk">难道…؟</span> سؤال استنكاري يتصدّر وينتهي بـ؟',
+  'N':'<span class="zhk">越来越</span> + صفة (تدرّج).',
+  'S':'<span class="zhk">地</span>: (صفة)地 + الفعل.',
+  'R':'<span class="zhk">用</span> + الأداة + الفعل (الأداة قبل الفعل).',
+  'Q':'<span class="zhk">给…留下…印象</span> قالب ثابت.',
+  'U':'<span class="zhk">到底/究竟</span> قبل أداة الاستفهام.',
+  '27':'<span class="zhk">一…就</span>: V₁ + 一 + V₂ + 就 + V₃ (تسلسل سريع).',
+  '6':'<span class="zhk">只有…才</span>: الشرط أوّلاً و才 قبل النتيجة.',
+  'M':'<span class="zhk">再…就</span>: 再 + كمّيّة + 就 + النتيجة.',
+  'T':'<span class="zhk">正在/在</span> + الفعل (مستمرّ الآن).',
+  'O':'<span class="zhk">从…到</span>: من البداية إلى النهاية.',
+  'عام':'الترتيب القياسي: <b>(زمن/مكان) + الفاعل + (ظرف) + الفعل + (مفعول) + (مكمّل/了)</b>. علامات الجانب 了/着/过 تلتصق بالفعل.',
+};
+
+/* ===================== build flat question pool ===================== */
+const POOL = [];
+GRAMMAR.forEach(g=>{
+  (g.questions||[]).forEach(q=>{
+    if(!q.fragments || !q.answer) return;
+    POOL.push({
+      frags:q.fragments.split('/'),
+      answer:q.answer,
+      pinyin:q.pinyin||'',
+      ar:q.explain||'',
+      ruleCode:q.rule||g.code,
+      ruleName:q.ruleName||g.title_ar
+    });
+  });
+});
+
+function normZh(s){ return (s||'').replace(/[\s，。！？、,.!?]/g,''); }
+
+/* find example answers containing all triggers of a signal */
+function examplesFor(sig, n){
+  const out=[];
+  for(const q of POOL){
+    if(out.length>=n) break;
+    const a=q.answer;
+    const hit = sig.t.every(tr=>a.indexOf(tr)!==-1);
+    if(hit && !out.some(o=>o.answer===a)) out.push(q);
+  }
+  return out;
+}
+
+/* compute structural cues present in an answer (for the drill hint) */
+function cuesForAnswer(answer, ruleCode){
+  const cues=[];
+  if(RULECUE[ruleCode]) cues.push(RULECUE[ruleCode]);
+  const order=['pair','attach','front','tail','back','adv'];
+  const matched = SIGNALS.filter(s=> s.t.every(tr=>answer.indexOf(tr)!==-1) && !(s.x && s.x.some(w=>answer.indexOf(w)!==-1)));
+  matched.sort((a,b)=>order.indexOf(a.cls)-order.indexOf(b.cls));
+  for(const s of matched){
+    if(cues.length>=3) break;
+    if(!cues.some(c=>c.includes(s.r.slice(0,18)))) cues.push(s.r);
+  }
+  return cues.slice(0,3);
+}
+
+/* ===================== METHOD view ===================== */
+const LAWS = [
+  {k:'f', t:'علامات النهاية تُختَم بها الجملة', r:'القطعة المنتهية بـ <span class="zhk">吗</span> / <span class="zhk">吧</span> / <span class="zhk">呢</span> / <span class="zhk">了</span> أو بعلامة استفهام هي <b>الذيل</b>. ضعها أخيراً فوراً قبل أن تبدأ.', ex:['吗','吧']},
+  {k:'f', t:'المرساة الأولى: الموضوع يتصدّر', r:'<span class="zhk">这/那 + 量词</span>، أو كلمة مكان/زمن، أو <span class="zhk">随着</span> / <span class="zhk">各位</span> — كلّها تفتتح الجملة. في الجملة الوجوديّة <b>المكان أوّلاً</b> (عكس العربية).', ex:['这场','随着']},
+  {k:'v', t:'اللواصق تلتصق بكلمتها', r:'<span class="zhk">把</span> و<span class="zhk">被</span> تخطفان المفعول، <span class="zhk">得</span> تلتصق بالفعل، <span class="zhk">地</span> تسبق الفعل، <span class="zhk">的</span> تسبق الاسم، وكلمة العدّ (个/条/种…) تلتصق باسمها. اربط كلّ لاصقة بجارتها أوّلاً.', ex:['把','得']},
+  {k:'v', t:'الظروف قبل الفعل لا بعده', r:'<span class="zhk">都</span> / <span class="zhk">也</span> / <span class="zhk">就</span> / <span class="zhk">才</span> / <span class="zhk">再</span> / <span class="zhk">不</span> / <span class="zhk">没</span> / <span class="zhk">正在</span> — لا تنهي جملة أبداً. و<b class="zh">都</b> تسبق <span class="zhk">把</span> و<span class="zhk">被</span>.', ex:['都','正在']},
+  {k:'t', t:'أزواج الروابط بترتيب ثابت', r:'<span class="zhk">不但…还</span>، <span class="zhk">只有…才</span>، <span class="zhk">如果…就</span>، <span class="zhk">一…就</span>، <span class="zhk">连…都</span>، <span class="zhk">从…到</span>، <span class="zhk">是…的</span>. الطرف الأوّل دائماً قبل الثاني.', ex:['只有','连']},
+  {k:'f', t:'إشارات الاتجاه لا تتصدّر', r:'<span class="zhk">但/可是/却</span>، <span class="zhk">所以/因此</span>، <span class="zhk">于是</span>، <span class="zhk">其实</span>، <span class="zhk">相反</span>، والضمائر <span class="zhk">它/这些</span> — كلّها تعتمد على شيء <b>قبلها</b>، فلا تأتي أوّلاً. وكلمات النتيجة (所以/吸引了) تأتي أخيراً.', ex:['但','所以']},
+  {k:'t', t:'الباقي يملأ الهيكل القياسي', r:'بعد تثبيت الذيل والمرساة واللواصق، رتّب الباقي على: <b>(زمن/مكان) + الفاعل + (ظرف) + الفعل + (مفعول/مكمّل)</b>.', ex:[]},
+];
+function renderLaws(){
+  document.getElementById('laws').innerHTML = LAWS.map((law,i)=>{
+    const exs=[];
+    for(const tr of (law.ex||[])){
+      const q=POOL.find(p=>p.answer.indexOf(tr)!==-1 && !exs.some(e=>e.answer===p.answer));
+      if(q) exs.push(q);
+    }
+    const exHtml = exs.length? `<div class="law-ex"><div class="exlab">مثال من الامتحان</div>${
+      exs.map(q=>`<div class="ex-line"><button class="tts-btn" onclick="ttsPlay('${esc(q.answer)}',this)" aria-label="استمع">🔊</button><span class="ex-zh">${ttsRenderClickable(q.answer,q.pinyin)}</span></div>`).join('')
+    }</div>`:'';
+    return `<div class="law"><div class="law-head">
+      <div class="law-no ${law.k}">${i+1}</div>
+      <div class="law-body"><div class="law-title">${law.t}</div><div class="law-rule">${law.r}</div></div>
+    </div>${exHtml}</div>`;
+  }).join('');
+}
+
+/* ===================== SIGNALS view ===================== */
+const GROUPS=[
+  {c:'front', tag:'tag-front', name:'المرساة — تتصدّر الجملة', desc:'علامات الموضوع: ضعها أوّلاً.'},
+  {c:'tail',  tag:'tag-tail',  name:'الذيل — لاحقة النهاية', desc:'علامات تُختَم بها الجملة.'},
+  {c:'adv',   tag:'tag-adv',   name:'الظرف — قبل الفعل', desc:'لا تأتي آخراً، وتسبق الفعل.'},
+  {c:'attach',tag:'tag-attach',name:'اللاصقة — تلتصق بكلمة', desc:'تربط نفسها بجارتها مباشرة.'},
+  {c:'pair',  tag:'tag-pair',  name:'زوج روابط — ترتيب ثابت', desc:'الطرف الأوّل قبل الثاني.'},
+  {c:'back',  tag:'tag-back',  name:'إشارة للخلف — لا تتصدّر', desc:'تعتمد على ما قبلها.'},
+];
+let sigFilter='all';
+/* ===== class meta + question classifier (مفتاح الترتيب) ===== */
+const CLS=[
+ {c:'front', ar:'المرساة',     zh:'句首', sw:'var(--seal)'},
+ {c:'tail',  ar:'الذيل',       zh:'句尾', sw:'var(--gold2)'},
+ {c:'adv',   ar:'الظرف',       zh:'状语', sw:'#5a4a8a'},
+ {c:'attach',ar:'اللاصقة',     zh:'附着', sw:'var(--ink)'},
+ {c:'pair',  ar:'زوج روابط',   zh:'关联', sw:'var(--jade)'},
+ {c:'back',  ar:'للخلف',       zh:'回指', sw:'#8a5a2a'},
+ {c:'gen',   ar:'ترتيب قياسي', zh:'语序', sw:'var(--ink3)'},
+];
+const CLSMAP={}; CLS.forEach(x=>CLSMAP[x.c]=x);
+const RULECLASS={A:'attach',B:'attach',C:'attach',S:'attach',R:'attach',
+  D:'front',J:'front', E:'pair',F:'pair',K:'pair',P:'pair',Q:'pair','27':'pair','6':'pair',O:'pair',
+  N:'adv',T:'adv',U:'adv',M:'adv', I:'tail', 'عام':'gen'};
+function qClass(q){ return RULECLASS[q.ruleCode] || 'gen'; }
+function clsColor(c){ return (CLSMAP[c]||{}).sw || 'var(--ink3)'; }
+
+/* ===== SIGNALS view — interactive color key ===== */
+function renderFilter(){
+  const counts={}; CLS.forEach(x=>counts[x.c]=SIGNALS.filter(s=>s.cls===x.c).length);
+  let h='<button class="key" data-c="all" aria-pressed="'+(sigFilter==='all')+'" onclick="setFilter(\'all\')"><span class="dot" style="background:linear-gradient(135deg,var(--seal),var(--jade))"></span>الكل</button>';
+  h+=CLS.filter(x=>x.c!=='gen').map(x=>
+    `<button class="key" data-c="${x.c}" aria-pressed="${x.c===sigFilter}" style="--sw:${x.sw}" onclick="setFilter('${x.c}')"><span class="dot"></span>${x.ar}<span class="kc">${x.zh}</span><span class="kn">${counts[x.c]||0}</span></button>`
+  ).join('');
+  document.getElementById('filterbar').innerHTML=h;
+}
+function setFilter(c){ sigFilter=c; renderFilter(); renderSignals(); }
+function renderSignals(){
+  const host=document.getElementById('signals');
+  const groups = GROUPS.filter(g=> sigFilter==='all' || sigFilter===g.c);
+  host.innerHTML = groups.map(g=>{
+    const col=clsColor(g.c);
+    const sigs=SIGNALS.filter(s=>s.cls===g.c);
+    return `<div class="grp"><div class="grp-head"><span class="grp-tag ${g.tag}">${g.name}</span><span class="grp-desc">${g.desc}</span></div>${
+      sigs.map(s=>{
+        const ex=examplesFor(s,1)[0];
+        const exHtml = ex? `<div class="sig-ex"><span class="exlab">مثال</span><button class="tts-btn" onclick="ttsPlay('${esc(ex.answer)}',this)" aria-label="استمع">🔊</button><span>${ttsRenderClickable(ex.answer,ex.pinyin)}</span></div>`:'';
+        return `<div class="sig" style="--sc:${col}"><div class="sig-top"><span class="sig-zh">${s.z}</span><span class="sig-cls" style="--sc:${col}">${CLSMAP[g.c].zh}</span></div><div class="sig-rule">${s.r}</div>${exHtml}</div>`;
+      }).join('')
+    }</div>`;
+  }).join('');
+}
+
+/* ===================== PACKAGED TESTS (مكمّمة) ===================== */
+const LS_WEAK='hsk4tk_weak', LS_DONE='hsk4tk_done', LS_OK='hsk4tk_ok', LS_BEST='hsk4tk_best';
+let weak = JSON.parse(localStorage.getItem(LS_WEAK)||'[]');
+let doneCount = +(localStorage.getItem(LS_DONE)||0);
+let okCount = +(localStorage.getItem(LS_OK)||0);
+let best = JSON.parse(localStorage.getItem(LS_BEST)||'{}');
+const TEST_SIZE=10;
+
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function mulberry32(s){ return function(){ s|=0; s=s+0x6D2B79F5|0; let t=Math.imul(s^s>>>15,1|s); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function seededShuffle(a,seed){ a=a.slice(); const rnd=mulberry32(seed); for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function buildMixedTests(){
+  const buckets={}; CLS.forEach(x=>buckets[x.c]=[]);
+  const base=POOL.slice().sort((a,b)=> ((a.ruleCode+a.answer)<(b.ruleCode+b.answer)?-1:1));
+  base.forEach(q=>{ (buckets[qClass(q)]||buckets.gen).push(q); });
+  Object.keys(buckets).forEach((c,i)=>{ buckets[c]=seededShuffle(buckets[c], 9973+i*131); });
+  const order=CLS.map(x=>x.c); const master=[]; let left=POOL.length;
+  while(left>0){ for(const c of order){ if(buckets[c].length){ master.push(buckets[c].shift()); left--; } } }
+  const tests=[]; for(let i=0;i<master.length;i+=TEST_SIZE){ tests.push(master.slice(i,i+TEST_SIZE)); }
+  return tests;
+}
+const MIXED=buildMixedTests();
+
+let T=null, cur=null, placed=[], answered=false;
+
+function updateStats(){
+  const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
+  set('st-done',doneCount); set('st-correct',okCount); set('st-weak',weak.length);
+}
+
+function renderHome(){
+  document.getElementById('drill-run').style.display='none';
+  document.getElementById('drill-done').style.display='none';
+  const home=document.getElementById('drill-home'); home.style.display='block';
+  const tiles=MIXED.map((qs,i)=>{
+    const id='m'+i, b=best[id];
+    const cls = b==null?'' : (b>=80?'passed':'tried');
+    const bs = b==null?'' : `<span class="tbest" style="color:${b>=80?'var(--jade)':'var(--gold2)'}">${b}%</span>`;
+    return `<div class="test-tile ${cls}" onclick="startMixed(${i})">${bs}<span class="tn">${i+1}</span><span class="tl">١٠ مخلوط</span></div>`;
+  }).join('');
+  const counts={}; CLS.forEach(x=>counts[x.c]=POOL.filter(q=>qClass(q)===x.c).length);
+  const clsBtns=CLS.filter(x=>counts[x.c]>0).map(x=>`<button class="cls-btn" style="--sw:${x.sw}" onclick="startClass('${x.c}')"><span class="dot"></span>${x.ar}<span class="cnt">${counts[x.c]||0}</span></button>`).join('');
+  const rev = weak.length
+    ? `<div class="review-card" onclick="startReview()"><div><div class="rl">↻ اختبار المراجعة</div><div class="rs">الأسئلة التي أخطأت فيها — رتّبها من جديد</div></div><div style="font-weight:800;color:var(--seal);font-family:Tahoma">${weak.length}</div></div>`
+    : `<div class="review-card off"><div><div class="rl" style="color:var(--ink3)">↻ اختبار المراجعة</div><div class="rs">لا أخطاء محفوظة — أحسنت!</div></div></div>`;
+  home.innerHTML = `
+    <div class="drill-stats">
+      <div class="stat"><div class="n" id="st-done">${doneCount}</div><div class="l">حاولتَها</div></div>
+      <div class="stat"><div class="n j" id="st-correct">${okCount}</div><div class="l">صحيحة</div></div>
+      <div class="stat"><div class="n s" id="st-weak">${weak.length}</div><div class="l">تحتاج مراجعة</div></div>
+    </div>
+    <div class="drill-instr">كلّ اختبار = ١٠ أسئلة <b>مخلوطة حسب التصنيف</b>. رتّب القطع دون النظر للمعنى، واستعن بالتلميح التركيبي. في النهاية تظهر نتيجتك وتحليل أدائك حسب لون كلّ تصنيف.</div>
+    <div class="sect-h">📦 اختبارات مخلوطة <span class="zh">混合测验</span></div>
+    <div class="test-grid">${tiles}</div>
+    <div class="sect-h">🎨 تدريب حسب التصنيف <span class="zh">按分类训练</span></div>
+    <div class="cls-row">${clsBtns}</div>
+    <div class="sect-h">↻ المراجعة <span class="zh">复习</span></div>
+    ${rev}
+    <div class="btn-row" style="margin-top:18px"><button class="btn btn-clear" onclick="resetProgress()">إعادة ضبط التقدّم</button></div>
+  `;
+}
+
+function startMixed(i){ startTest({id:'m'+i, title:'اختبار مخلوط '+(i+1), color:'var(--gold)', qs:MIXED[i], save:true}); }
+function startClass(c){
+  const pool=seededShuffle(POOL.filter(q=>qClass(q)===c), 4242);
+  if(!pool.length) return;
+  startTest({id:'c'+c, title:'تصنيف: '+CLSMAP[c].ar, color:CLSMAP[c].sw, qs:pool.slice(0,Math.min(12,pool.length)), save:false});
+}
+function startReview(){
+  if(!weak.length) return;
+  startTest({id:'rev', title:'اختبار المراجعة', color:'var(--seal)', qs:shuffle(POOL.filter(q=>weak.includes(q.answer))).slice(0,15), save:false});
+}
+function startTest(spec){
+  T=Object.assign({}, spec, {idx:0, res:[]});
+  document.getElementById('drill-home').style.display='none';
+  document.getElementById('drill-done').style.display='none';
+  document.getElementById('drill-run').style.display='block';
+  renderQuestion();
+}
+
+function renderQuestion(){
+  cur=T.qs[T.idx]; placed=[]; answered=false;
+  const col=clsColor(qClass(cur));
+  document.getElementById('run-prog').textContent='السؤال '+(T.idx+1)+' / '+T.qs.length;
+  document.getElementById('run-title').textContent=T.title;
+  document.getElementById('run-fill').style.width=(T.idx/T.qs.length*100)+'%';
+  const pill=document.getElementById('d-rule'); pill.textContent=cur.ruleName; pill.style.background=col;
+  document.getElementById('d-weak').style.display=weak.includes(cur.answer)?'inline-block':'none';
+  const order=shuffle(cur.frags.map((f,i)=>({f,i})));
+  document.getElementById('d-bank').innerHTML=order.map(o=>`<button class="frag" data-i="${o.i}" onclick="placeFrag(this)">${o.f}</button>`).join('');
+  const slots=document.getElementById('d-slots'); slots.className='slots';
+  slots.innerHTML=cur.frags.map((_,i)=>{ const hint=i===0?' first-hint':(i===cur.frags.length-1?' last-hint':''); return `<button class="slot${hint}" data-s="${i}" onclick="unplace(${i})"><span class="pos">${i+1}</span></button>`; }).join('');
+  document.getElementById('d-cue').className='cue'; document.getElementById('d-cue').innerHTML='';
+  document.getElementById('d-result').className='result'; document.getElementById('d-result').innerHTML='';
+  document.getElementById('d-nextrow').style.display='none';
+  document.getElementById('d-actions').style.display='flex';
+}
+function placeFrag(btn){
+  if(answered) return;
+  const i=+btn.dataset.i;
+  const slots=document.querySelectorAll('#d-slots .slot');
+  for(const s of slots){ if(!s.classList.contains('filled')){ s.classList.add('filled'); s.dataset.frag=i; s.innerHTML=`<span class="pos">${+s.dataset.s+1}</span>${cur.frags[i]}`; placed.push(i); btn.classList.add('used'); break; } }
+}
+function unplace(si){
+  if(answered) return;
+  const slots=document.querySelectorAll('#d-slots .slot'); const s=slots[si];
+  if(!s.classList.contains('filled')) return;
+  const filled=[...slots].filter(x=>x.classList.contains('filled')).map(x=>+x.dataset.frag).filter(fi=>fi!==+s.dataset.frag);
+  const removed=+s.dataset.frag;
+  slots.forEach((x,idx)=>{ x.classList.remove('filled'); x.innerHTML=`<span class="pos">${idx+1}</span>`; delete x.dataset.frag; });
+  placed=[];
+  filled.forEach(fi=>{ const tgt=[...slots].find(x=>!x.classList.contains('filled')); tgt.classList.add('filled'); tgt.dataset.frag=fi; tgt.innerHTML=`<span class="pos">${+tgt.dataset.s+1}</span>${cur.frags[fi]}`; placed.push(fi); });
+  const bf=document.querySelector(`#d-bank .frag[data-i="${removed}"]`); if(bf) bf.classList.remove('used');
+}
+function clearSlots(){
+  if(answered) return;
+  document.querySelectorAll('#d-bank .frag').forEach(f=>f.classList.remove('used'));
+  document.querySelectorAll('#d-slots .slot').forEach((s,idx)=>{ s.classList.remove('filled'); s.innerHTML=`<span class="pos">${idx+1}</span>`; delete s.dataset.frag; });
+  placed=[];
+}
+function showCue(){
+  const col=clsColor(qClass(cur));
+  const cues=cuesForAnswer(cur.answer, cur.ruleCode);
+  const el=document.getElementById('d-cue');
+  el.style.borderInlineStartColor=col;
+  el.innerHTML=`<div class="cuelab" style="color:${col}">🔍 تلميح تركيبي — انظر للموضع لا للمعنى</div><ul>${cues.map(c=>`<li>${c}</li>`).join('')}</ul>`;
+  el.classList.add('show');
+}
+function checkDrill(){
+  if(answered) return;
+  if(placed.length!==cur.frags.length){ flashSlots('bad'); return; }
+  answered=true;
+  const guess=placed.map(i=>cur.frags[i]).join('');
+  const correct=normZh(guess)===normZh(cur.answer);
+  doneCount++; localStorage.setItem(LS_DONE,doneCount);
+  T.res.push({q:cur, ok:correct, cls:qClass(cur)});
+  const slots=document.getElementById('d-slots'), res=document.getElementById('d-result');
+  if(correct){
+    okCount++; localStorage.setItem(LS_OK,okCount);
+    weak=weak.filter(a=>a!==cur.answer); localStorage.setItem(LS_WEAK,JSON.stringify(weak));
+    slots.classList.add('ok'); res.className='result ok show';
+    res.innerHTML=`<div class="result-head">✓ ترتيب صحيح</div>${answerBlock()}`;
+  }else{
+    if(!weak.includes(cur.answer)){ weak.push(cur.answer); localStorage.setItem(LS_WEAK,JSON.stringify(weak)); }
+    slots.classList.add('bad'); res.className='result bad show';
+    res.innerHTML=`<div class="result-head">✗ الترتيب الصحيح:</div>${answerBlock()}`;
+  }
+  document.getElementById('d-actions').style.display='none';
+  const nr=document.getElementById('d-nextrow'); nr.style.display='flex';
+  nr.querySelector('button').textContent=(T.idx<T.qs.length-1)?'السؤال التالي ←':'إنهاء وعرض النتيجة ←';
+  document.getElementById('run-fill').style.width=((T.idx+1)/T.qs.length*100)+'%';
+  updateStats();
+}
+function nextStep(){ if(T.idx<T.qs.length-1){ T.idx++; renderQuestion(); } else { finishTest(); } }
+function answerBlock(){
+  return `<div class="ans-zh">${ttsRenderClickable(cur.answer,cur.pinyin)} <button class="tts-btn" onclick="ttsPlay('${esc(cur.answer)}',this)" aria-label="استمع">🔊</button></div>
+    <div class="ans-pin">${cur.pinyin}</div>
+    <div class="ans-ar"><span class="reveal">المعنى يُكشف الآن</span>${cur.ar}</div>`;
+}
+function flashSlots(cls){ const s=document.getElementById('d-slots'); s.classList.add(cls); setTimeout(()=>s.classList.remove(cls),500); }
+
+function finishTest(){
+  const total=T.res.length, ok=T.res.filter(r=>r.ok).length, pct=total?Math.round(ok/total*100):0;
+  if(T.save){ if(best[T.id]==null||pct>best[T.id]){ best[T.id]=pct; localStorage.setItem(LS_BEST,JSON.stringify(best)); } }
+  const byc={}; T.res.forEach(r=>{ byc[r.cls]=byc[r.cls]||{t:0,o:0}; byc[r.cls].t++; if(r.ok)byc[r.cls].o++; });
+  const brk=CLS.filter(x=>byc[x.c]).map(x=>{ const d=byc[x.c], p=Math.round(d.o/d.t*100);
+    return `<div class="brk-row"><span class="bl" style="--sw:${x.sw}"><span class="dot"></span>${x.ar}</span><span class="bbar"><i style="width:${p}%;background:${x.sw}"></i></span><span class="bf">${d.o}/${d.t}</span></div>`; }).join('');
+  const missed=T.res.filter(r=>!r.ok);
+  const missedHtml = missed.length
+    ? `<div class="missed"><div class="missed-h">✗ أخطأت في ${missed.length} — راجعها:</div>${missed.map(r=>`<div class="missed-item"><div class="mi-zh">${ttsRenderClickable(r.q.answer,r.q.pinyin)} <button class="tts-btn" onclick="ttsPlay('${esc(r.q.answer)}',this)">🔊</button></div><div class="mi-ar">${r.q.ar}</div></div>`).join('')}</div>`
+    : `<div class="missed"><div class="missed-h" style="color:var(--jade)">✓ كل الأسئلة صحيحة — ممتاز!</div></div>`;
+  const rc = pct>=80?'var(--jade)':(pct>=50?'var(--gold)':'var(--seal)');
+  const msg = pct>=80?'أداء ممتاز':(pct>=50?'جيّد — واصل':'يحتاج مراجعة');
+  document.getElementById('drill-run').style.display='none';
+  const done=document.getElementById('drill-done'); done.style.display='block';
+  done.innerHTML=`<div class="done-wrap">
+    <div class="done-title">${T.title}</div>
+    <div class="score-ring" style="--p:${pct};--rc:${rc}"><div><span class="pp">${pct}%</span><span class="ps">${ok} / ${total}</span></div></div>
+    <div style="font-weight:800;color:${rc};font-size:.86rem">${msg}</div>
+    <div class="brk"><div class="missed-h" style="color:var(--ink2)">أداؤك حسب التصنيف</div>${brk}</div>
+    ${missedHtml}
+    <div class="btn-row" style="margin-top:16px;justify-content:center;flex-wrap:wrap">
+      ${missed.length?'<button class="btn btn-hint" onclick="reviewMissedNow()">راجع الأخطاء الآن</button>':''}
+      <button class="btn btn-check" onclick="restartTest()">أعِد الاختبار</button>
+      <button class="btn btn-next" onclick="renderHome()">القائمة ←</button>
+    </div></div>`;
+  window.scrollTo({top:0,behavior:'auto'});
+}
+function restartTest(){ startTest(T); }
+function reviewMissedNow(){ startTest({id:'rev', title:'مراجعة أخطاء — '+T.title, color:'var(--seal)', qs:T.res.filter(r=>!r.ok).map(r=>r.q), save:false}); }
+function resetProgress(){
+  if(!confirm('إعادة ضبط كلّ الإحصائيات وقائمة المراجعة وأفضل النتائج؟')) return;
+  weak=[]; doneCount=0; okCount=0; best={};
+  [LS_WEAK,LS_DONE,LS_OK,LS_BEST].forEach(k=>localStorage.removeItem(k));
+  renderHome();
+}
+
+/* ===================== shared ===================== */
+function esc(s){ return (s||'').replace(/'/g,'').replace(/"/g,'&quot;'); }
+function showView(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
+  window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
+}
+function openSettings(){
+  document.querySelectorAll('input[name="ttsSrc"]').forEach(r=>r.checked=(r.value===ttsGetSource()));
+  if(!TTS_BEST_VOICE) TTS_BEST_VOICE=ttsPickBestVoice();
+  const info=document.getElementById('ttsVoiceInfo');
+  if(TTS_BEST_VOICE){
+    const prem=/neural|natural|premium|enhanced|wavenet|hd|yunyang|xiaoxiao|tingting/i.test(TTS_BEST_VOICE.name||'');
+    info.innerHTML=`صوت النظام المكتشف: <b>${TTS_BEST_VOICE.name}</b>${prem?' ⭐':''}`;
+  } else info.innerHTML='لم يُكتشف صوت صيني — سيُستخدم YouDao.';
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings(){ document.getElementById('settingsModal').classList.remove('show'); }
+function saveSettings(){
+  const sel=document.querySelector('input[name="ttsSrc"]:checked');
+  if(sel) ttsSetSource(sel.value);
+  closeSettings();
+}
+
+/* ===================== init ===================== */
+renderLaws();
+renderFilter();
+renderSignals();
+updateStats();
+  renderHome();
+</script>
+</body>
+</html>
