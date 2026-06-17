@@ -707,7 +707,7 @@ const SIGNALS = [
 
   // ---- ADV (ظرف — بعد الفاعل وقبل الفعل، لا يأتي آخراً) ----
   {z:'都', cls:'adv', t:['都'], x:['首都','成都','都市','京都'], r:'«جميعاً» — قبل الفعل، و<b>تسبق</b> <span class="zhk">把</span> و<span class="zhk">被</span> إن وُجدت.'},
-  {z:'也 / 就 / 才 / 再', cls:'adv', t:['就'], x:['成就','迁就','造就','将就','就业'], r:'ظروف ربط — قبل الفعل، لا تأتي آخراً. <b class="zh">才</b> تأتي قبل النتيجة في <span class="zhk">只有…才</span>.'},
+  {z:'也 / 就 / 才 / 再', cls:'adv', t:['就'], x:['成就','迁就','造就','将就','就业','就是','就要'], r:'ظروف ربط — قبل الفعل، لا تأتي آخراً. <b class="zh">才</b> تأتي قبل النتيجة في <span class="zhk">只有…才</span>.'},
   {z:'正在 / 在', cls:'adv', t:['正在'], r:'علامة الفعل المستمرّ — <b>قبل الفعل مباشرة</b>.'},
   {z:'不 / 没', cls:'adv', t:['没'], r:'النفي — قبل الفعل. <span class="zhk">没…过</span> = نفي تجربة ماضية.'},
   {z:'千万 / 马上 / 完全', cls:'adv', t:['千万'], r:'ظرف تأكيد — قبل الفعل أو قبل <span class="zhk">把</span>.'},
@@ -802,6 +802,11 @@ function signalMatches(answer, s){
   if(s.nearEnd && !s.nearEnd.some(tr=>{ const i=answer.lastIndexOf(tr); return i>=0 && i>=answer.length-2; })) return false; // closing particle must be near the end
   return true;
 }
+/* law-example matcher: reuse the strict predicate for single-char hot triggers (applies their exclusions); plain contains for curated multi-char tokens */
+function exampleMatch(answer, token){
+  const sig=SIGNALS.find(s=> (s.t||[]).length===1 && s.t[0]===token );
+  return sig ? signalMatches(answer, sig) : answer.indexOf(token)>=0;
+}
 function examplesFor(sig, n){
   const out=[];
   for(const q of POOL){
@@ -839,7 +844,7 @@ function renderLaws(){
   document.getElementById('laws').innerHTML = LAWS.map((law,i)=>{
     const exs=[];
     for(const tr of (law.ex||[])){
-      const q=POOL.find(p=>p.answer.indexOf(tr)!==-1 && !exs.some(e=>e.answer===p.answer));
+      const q=POOL.find(p=>exampleMatch(p.answer, tr) && !exs.some(e=>e.answer===p.answer));
       if(q) exs.push(q);
     }
     const exHtml = exs.length? `<div class="law-ex"><div class="exlab">مثال من الامتحان</div>${
