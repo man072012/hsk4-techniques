@@ -334,6 +334,38 @@ body{padding-bottom:64px}
 .sk-dot.miss{background:var(--seal)}
 .sk-frac{font-size:.72rem;color:var(--ink3);font-family:'Tahoma',sans-serif}
 
+
+/* reports list + print */
+.rep-list-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--paper);cursor:pointer;text-align:start;width:100%}
+.rep-list-item:active{border-color:var(--gold)}
+.rep-li-score{font-weight:800;min-width:46px;text-align:center;border-radius:8px;padding:5px 4px;color:#fff;font-size:.82rem;flex-shrink:0}
+.rep-li-main{flex:1;min-width:0}
+.rep-li-date{font-size:.7rem;color:var(--ink3);margin-top:2px}
+.rep-li-del{background:none;border:none;color:var(--ink3);font-size:1rem;cursor:pointer;padding:4px;flex-shrink:0}
+.rep-view-body .score-ring{margin:10px auto}
+#reportsModal .modal-box{max-height:88vh;overflow:auto}
+#print-area{display:none}
+.print-head{text-align:center;margin-bottom:14px}
+.print-head .ph-t{font-weight:800;font-size:1.05rem;color:#111}
+.print-head .ph-s{color:#555;font-size:.8rem;margin-top:3px}
+@media print{
+  html,body{background:#fff}
+  body>*{display:none!important}
+  #print-area{display:block!important;padding:6px}
+  #print-area .tts-btn,#print-area .btn,#print-area .btn-row{display:none!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* first-run auth gate */
+#authGate{position:fixed;inset:0;z-index:1000;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;gap:14px}
+#authGate .gate-seal{width:64px;height:64px;border-radius:14px;background:var(--seal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;box-shadow:0 6px 18px rgba(155,44,44,.3)}
+#authGate h2{margin:6px 0 0;font-size:1.15rem;color:var(--ink)}
+#authGate .gate-zh{color:var(--gold2);font-size:.8rem;font-weight:700;margin-top:-4px}
+#authGate .gate-sub{color:var(--ink2);font-size:.88rem;max-width:330px;line-height:1.8}
+#authGate .gate-btn{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 18px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink);cursor:pointer;font-family:inherit;font-weight:700;font-size:.95rem;box-shadow:var(--shadow)}
+#authGate .gate-btn:active{transform:scale(.98)}
+#authGate .gate-fallback{display:none;margin-top:8px;font-size:.78rem;color:var(--ink3);max-width:320px;line-height:1.7}
+#authGate .gate-fallback a{color:var(--seal);cursor:pointer;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -472,6 +504,12 @@ body{padding-bottom:64px}
     <div class="opt"><input type="radio" name="repModel" value="qwen-plus" id="rm-p"><label for="rm-p" style="margin:0;font-weight:500">qwen-plus — مضمون (مفعّل عندك)</label></div>
     <div class="opt"><input type="radio" name="repModel" value="qwen-max" id="rm-m"><label for="rm-m" style="margin:0;font-weight:500">qwen-max — الأقوى (يحتاج تفعيله في حسابك)</label></div>
     <div class="opt"><input type="radio" name="repModel" value="qwen-turbo" id="rm-t"><label for="rm-t" style="margin:0;font-weight:500">qwen-turbo — الأسرع والأرخص</label></div>
+    <label style="margin-top:16px">☁️ المزامنة وحفظ التقدّم</label>
+    <div id="authBox" style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0 8px;background:var(--paper2);font-size:.82rem;line-height:1.7"><div id="authState">…</div></div>
+    <div style="display:flex;gap:8px;margin:0 0 4px">
+      <button class="btn btn-close" style="flex:1" onclick="exportProgress()">⬇ تصدير التقدّم</button>
+      <label class="btn btn-close" style="flex:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center">⬆ استيراد<input type="file" accept="application/json,.json" onchange="importProgress(event)" style="display:none"></label>
+    </div>
     <label style="margin-top:16px">تقدّم التدريب</label>
     <button class="btn btn-clear" style="width:100%" onclick="resetProgress()">إعادة ضبط الإحصائيات وقائمة المراجعة</button>
     <div class="modal-actions">
@@ -480,6 +518,19 @@ body{padding-bottom:64px}
     </div>
   </div>
 </div>
+
+<!-- reports modal -->
+<div class="modal" id="reportsModal">
+  <div class="modal-box">
+    <h3>📋 تقاريري السابقة</h3>
+    <div id="reports-list"></div>
+    <div id="report-view" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn btn-close" onclick="closeReports()">إغلاق</button>
+    </div>
+  </div>
+</div>
+<div id="print-area"></div>
 
 <script>
 /* ===================== injected: proven TTS engine ===================== */
@@ -919,6 +970,9 @@ let doneCount = +(localStorage.getItem(LS_DONE)||0);
 let okCount = +(localStorage.getItem(LS_OK)||0);
 let best = JSON.parse(localStorage.getItem(LS_BEST)||'{}');
 let mastery = JSON.parse(localStorage.getItem('hsk4tk_mastery')||'{}');
+let reports = JSON.parse(localStorage.getItem('hsk4tk_reports')||'[]'); // saved test reports, newest first
+let currentReportId = null;
+function saveReports(){ try{ localStorage.setItem('hsk4tk_reports', JSON.stringify(reports.slice(0,40))); }catch(e){} }
 let DIAG = JSON.parse(localStorage.getItem('hsk4tk_diag')||'null'); // AI root-cause diagnosis driving the next test
 function updateMastery(res){ res.forEach(r=>{ const m=mastery[r.cls]||(mastery[r.cls]={seen:0,correct:0}); m.seen++; if(r.ok)m.correct++; }); try{localStorage.setItem('hsk4tk_mastery',JSON.stringify(mastery));}catch(e){} }
 function clsAcc(c){ const m=mastery[c]; return (m&&m.seen)? m.correct/m.seen : 0; }
@@ -1038,7 +1092,7 @@ function renderHome(){
   const oPct=oSeen?Math.round(oOk/oSeen*100):0;
   const _ms=goalSkills().filter(skClosed).length, _ts=goalSkills().length, _og=openWeakSkills().length;
   const masteryBars = seenCats.length? seenCats.map(x=>{const p=Math.round(clsAcc(x.c)*100); const dn=clsMastered(x.c); return `<div class="brk-row"><span class="bl" style="--sw:${x.sw}"><span class="dot"></span>${x.ar}${dn?' ✓':''}</span><span class="bbar"><i style="width:${p}%;background:${x.sw}"></i></span><span class="bf">${p}% · ${mastery[x.c].seen}</span></div>`;}).join('') : '<div class="rs" style="color:var(--ink3);font-size:.78rem">ابدأ أول اختبار وسيظهر هنا تحليل قوّتك وضعفك في كل تصنيف، ويتكيّف ما بعده حسب احتياجك.</div>';
-  const journey = `<div class="journey"><div class="journey-top"><div><div class="journey-t">🚀 رحلة التعلّم المُكيّفة</div><div class="journey-s">اختبر دون كشف، حلّل أخطاءك بالذكاء الاصطناعي، ثم اختبار جديد يستهدف ضعفك — حتى الإتقان.</div></div>${oSeen?`<div class="journey-pct">${oPct}%</div>`:''}</div><button class="btn btn-check" style="width:100%;margin-top:11px" onclick="startAdaptiveTest()">${oSeen?'واصل الرحلة ← (اختبار حسب احتياجك)':'ابدأ رحلة التعلّم ←'}</button>${_ts?`<div class="journey-diag">📌 قواعد مُغلقة بنجاح: <b>${_ms}/${_ts}</b>${_og?` · أهداف مفتوحة: <b>${_og}</b>`:''}</div>`:''}${(DIAG&&DIAG.summary)?`<div class="journey-diag">🧠 نمطك الحالي (حسب الذكاء الاصطناعي): ${DIAG.summary}</div>`:''}</div>`;
+  const journey = `<div class="journey"><div class="journey-top"><div><div class="journey-t">🚀 رحلة التعلّم المُكيّفة</div><div class="journey-s">اختبر دون كشف، حلّل أخطاءك بالذكاء الاصطناعي، ثم اختبار جديد يستهدف ضعفك — حتى الإتقان.</div></div>${oSeen?`<div class="journey-pct">${oPct}%</div>`:''}</div><button class="btn btn-check" style="width:100%;margin-top:11px" onclick="startAdaptiveTest()">${oSeen?'واصل الرحلة ← (اختبار حسب احتياجك)':'ابدأ رحلة التعلّم ←'}</button>${_ts?`<div class="journey-diag">📌 قواعد مُغلقة بنجاح: <b>${_ms}/${_ts}</b>${_og?` · أهداف مفتوحة: <b>${_og}</b>`:''}</div>`:''}${(DIAG&&DIAG.summary)?`<div class="journey-diag">🧠 نمطك الحالي (حسب الذكاء الاصطناعي): ${DIAG.summary}</div>`:''}${reports.length?`<button class="btn btn-next" style="width:100%;margin-top:8px" onclick="openReports()">📋 تقاريري السابقة (${reports.length})</button>`:''}</div>`;
   home.innerHTML = `
     <div class="drill-stats">
       <div class="stat"><div class="n" id="st-done">${doneCount}</div><div class="l">حاولتَها</div></div>
@@ -1172,6 +1226,7 @@ function finishTest(){
   REPORT={title:T.title, items:T.res.map((r,i)=>({num:i+1, frags:r.q.frags.join(' / '), answer:r.q.answer, pinyin:r.q.pinyin||'', guess:r.guess||'', ok:r.ok, cat:(CLSMAP[r.cls]?CLSMAP[r.cls].ar:r.cls), catCode:r.cls, rule:r.q.ruleName||''}))};
   const done=document.getElementById('drill-done'); done.style.display='block';
   done.innerHTML=`<div class="done-wrap">
+    <div id="report-capture">
     <div class="done-title">${T.title}</div>
     <div class="score-ring" style="--p:${pct};--rc:${rc}"><div><span class="pp">${pct}%</span><span class="ps">${ok} / ${total}</span></div></div>
     <div style="font-weight:800;color:${rc};font-size:.86rem">${msg}</div>
@@ -1182,14 +1237,52 @@ function finishTest(){
     ${skillHtml}
     <div class="ai-report" id="ai-diag"></div>
     <div class="ai-report" id="ai-report"></div>
+    </div>
     <div class="btn-row" style="margin-top:16px;justify-content:center;flex-wrap:wrap">
       <button class="btn btn-check" onclick="startAdaptiveTest()">🎯 الاختبار التالي (حسب احتياجك)</button>
       ${missed.length?'<button class="btn btn-hint" onclick="reviewMissedNow()">راجع أخطاءك الآن</button>':''}
       <button class="btn btn-next" onclick="renderHome()">القائمة ←</button>
     </div></div>`;
+  currentReportId = Date.now();
+  reports.unshift({ id: currentReportId, ts: currentReportId, title: T.title, pct: pct, ok: ok, total: total, html: (document.getElementById('report-capture')||{}).innerHTML || '' });
+  saveReports();
   window.scrollTo({top:0,behavior:'auto'});
   genDiagnosis();
   genReport();
+}
+/* ===================== reports history + PDF ===================== */
+function saveCurrentReport(){
+  if(currentReportId==null) return;
+  const cap=document.getElementById('report-capture'); if(!cap) return;
+  const rec=reports.find(r=>r.id===currentReportId); if(!rec) return;
+  rec.html=cap.innerHTML; saveReports();
+}
+function openReports(){ renderReportsList(); document.getElementById('reportsModal').classList.add('show'); }
+function closeReports(){ document.getElementById('reportsModal').classList.remove('show'); }
+function fmtDate(ts){ const d=new Date(ts); return d.toLocaleDateString('ar-EG-u-nu-latn')+' · '+d.toLocaleTimeString('ar-EG-u-nu-latn',{hour:'2-digit',minute:'2-digit'}); }
+function renderReportsList(){
+  const wrap=document.getElementById('reports-list'); const view=document.getElementById('report-view');
+  view.style.display='none'; view.innerHTML=''; wrap.style.display='block';
+  if(!reports.length){ wrap.innerHTML='<div class="rs" style="color:var(--ink3);text-align:center;padding:22px">لا توجد تقارير محفوظة بعد. أكمِل اختبارًا في «تدريب أعمى» ليُحفَظ هنا تلقائيًّا.</div>'; return; }
+  wrap.innerHTML=reports.map(function(r){
+    const rc=r.pct>=80?'var(--jade)':(r.pct>=50?'var(--gold2)':'var(--seal)');
+    return '<div class="rep-list-item" onclick="viewReport('+r.id+')"><span class="rep-li-score" style="background:'+rc+'">'+r.pct+'%</span><span class="rep-li-main"><div style="font-weight:700;font-size:.84rem">'+r.title+'</div><div class="rep-li-date">'+fmtDate(r.ts)+' · '+r.ok+'/'+r.total+'</div></span><button class="rep-li-del" onclick="event.stopPropagation();deleteReport('+r.id+')" aria-label="حذف">🗑</button></div>';
+  }).join('');
+}
+function viewReport(id){
+  const rec=reports.find(function(r){return r.id===id;}); if(!rec) return;
+  document.getElementById('reports-list').style.display='none';
+  const v=document.getElementById('report-view'); v.style.display='block';
+  v.innerHTML='<div class="btn-row" style="margin-bottom:12px;flex-wrap:wrap;justify-content:center"><button class="btn btn-check" onclick="printReport('+rec.id+')">⬇ تحميل PDF</button><button class="btn btn-next" onclick="renderReportsList()">→ القائمة</button><button class="btn btn-clear" onclick="deleteReport('+rec.id+')">🗑 حذف</button></div><div class="rep-view-body">'+rec.html+'</div>';
+  const box=document.querySelector('#reportsModal .modal-box'); if(box) box.scrollTop=0;
+}
+function deleteReport(id){ reports=reports.filter(function(r){return r.id!==id;}); saveReports(); renderReportsList(); }
+function printReport(id){
+  const rec=reports.find(function(r){return r.id===id;}); if(!rec) return;
+  const head='<div class="print-head"><div class="ph-t">مدرّب التكنيكات · 排序技巧 HSK4</div><div class="ph-s">'+rec.title+' — '+fmtDate(rec.ts)+'</div></div>';
+  const pa=document.getElementById('print-area'); pa.innerHTML=head+rec.html;
+  window.print();
+  setTimeout(function(){ pa.innerHTML=''; }, 800);
 }
 function restartTest(){ startTest(T); }
 function reviewMissedNow(){ startTest({id:'rev', title:'مراجعة أخطاء — '+T.title, color:'var(--seal)', qs:T.res.filter(r=>!r.ok).map(r=>r.q), save:false}); }
@@ -1214,6 +1307,7 @@ function showView(v){
   window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
 }
 function openSettings(){
+  if(window._updateAuthUI) _updateAuthUI();
   document.querySelectorAll('input[name="ttsSrc"]').forEach(r=>r.checked=(r.value===ttsGetSource()));
   document.querySelectorAll('input[name="repModel"]').forEach(r=>r.checked=(r.value===getReportModel()));
   if(!TTS_BEST_VOICE) TTS_BEST_VOICE=ttsPickBestVoice();
@@ -1475,6 +1569,7 @@ Reply with JSON ONLY, no markdown, exactly:
   }catch(e){
     box.innerHTML='<div class="rep-title">📋 تحليل إجاباتك</div><div class="feedback show wrong"><span class="fb-label">⚠️ '+(e.message||'خطأ')+'</span><div class="ai-line">تأكّد من مفتاح DashScope والاتصال، ثم أعد المحاولة.</div></div><div class="btn-row" style="justify-content:center;margin-top:10px"><button class="btn btn-hint" onclick="genReport()">إعادة المحاولة</button></div>';
   }
+  saveCurrentReport();
 }
 async function genDiagnosis(){
   const box=document.getElementById('ai-diag');
@@ -1515,6 +1610,7 @@ Reply with JSON ONLY, no markdown, exactly:
   }catch(e){
     box.innerHTML='<div class="diag-title">🧠 تشخيص نمط التعلّم</div><div class="feedback show wrong"><span class="fb-label">⚠️ '+(e.message||'خطأ')+'</span><div class="ai-line">تأكّد من المفتاح والاتصال.</div></div><div class="btn-row" style="justify-content:center;margin-top:10px"><button class="btn btn-hint" onclick="genDiagnosis()">إعادة المحاولة</button></div>';
   }
+  saveCurrentReport();
 }
 function renderDiag(){
   const box=document.getElementById('ai-diag'); if(!box||!DIAG) return;
@@ -1545,6 +1641,38 @@ function renderReport(aiItems){
   document.getElementById('ai-report').innerHTML=`<div class="rep-title">📋 تحليل إجاباتك <span style="color:var(--ink3);font-weight:700">${getReportModel()}</span></div>${rows}`;
 }
 
+/* ===================== cloud sync — UI + manual backup (Firebase logic in the module at end) ===================== */
+const SYNC_PREFIX='hsk4tk_';
+window.scheduleCloudPush = window.scheduleCloudPush || function(){};   // real impl set by the Firebase module
+function exportProgress(){
+  const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && k.indexOf(SYNC_PREFIX)===0) o[k]=localStorage.getItem(k); }
+  const blob=new Blob([JSON.stringify(o,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='hsk4tk-progress-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+function importProgress(ev){
+  const file=ev.target.files[0]; if(!file) return; const r=new FileReader();
+  r.onload=function(e){ try{ const o=JSON.parse(e.target.result); Object.keys(o).forEach(function(k){ if(k.indexOf(SYNC_PREFIX)===0 && typeof o[k]==='string') localStorage.setItem(k,o[k]); }); alert('تم الاستيراد ✅ — ستُعاد الصفحة'); location.reload(); }catch(err){ alert('ملف غير صالح ❌'); } };
+  r.readAsText(file);
+}
+function _updateAuthUI(){
+  try{
+    const u=(window.fbUser&&window.fbUser())||null; const el=document.getElementById('authState'); if(!el) return;
+    if(u){
+      el.innerHTML='<span style="color:var(--jade)">●</span> متصل: <b>'+(u.email||u.name||'مستخدم')+'</b> — يُحفَظ تلقائيًّا سحابيًّا'+
+        '<button onclick="window.fbSignOut&&fbSignOut()" style="margin-inline-start:8px;padding:4px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);cursor:pointer;font-family:inherit;font-size:.76rem">خروج</button>';
+    } else {
+      el.innerHTML='<button onclick="window.fbSignIn&&fbSignIn()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px;border:1px solid var(--line);border-radius:9px;background:var(--paper);cursor:pointer;font-family:inherit;font-weight:600">'+
+        '<svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.49 12c0-.73.13-1.43.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>'+
+        'تسجيل الدخول بحساب Google</button>'+
+        '<div style="margin-top:6px;color:var(--ink3);font-size:.74rem">اختياري — لحفظ تقدّمك ومزامنته عبر الأجهزة. التطبيق يعمل بدون تسجيل دخول.</div>';
+    }
+  }catch(e){}
+}
+window._updateAuthUI=_updateAuthUI;
+function hideAuthGate(){ const g=document.getElementById('authGate'); if(g) g.style.display='none'; try{ document.documentElement.style.overflow=''; }catch(e){} }
+function showAuthGate(){ const g=document.getElementById('authGate'); if(g) g.style.display='flex'; try{ document.documentElement.style.overflow='hidden'; }catch(e){} }
+function maybeGate(){ try{ if(!localStorage.getItem('hsk4tk_authed')){ showAuthGate(); setTimeout(function(){ if(!window.fbReady){ const f=document.getElementById('gateFallback'); if(f) f.style.display='block'; } }, 5000); } }catch(e){} }
+
 /* ===================== init ===================== */
 renderLaws();
 renderFilter();
@@ -1573,6 +1701,64 @@ renderSignals();
 updateStats();
   renderHome();
   renderPicHome();
+  _updateAuthUI();
+  maybeGate();
+</script>
+<!-- first-run login gate -->
+<div id="authGate">
+  <div class="gate-seal">序</div>
+  <h2>مدرّب التكنيكات · HSK4</h2>
+  <div class="gate-zh">排序技巧</div>
+  <div class="gate-sub">سجّل دخولك بحساب Google للبدء — يحفظ تقدّمك ويزامنه عبر أجهزتك تلقائيًّا.</div>
+  <button class="gate-btn" onclick="window.fbSignIn&&window.fbSignIn()">
+    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.49 12c0-.73.13-1.43.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
+    تسجيل الدخول بحساب Google
+  </button>
+  <div class="gate-fallback" id="gateFallback">تعذّر تحميل خدمة الدخول — قد تحتاج VPN داخل الصين. <a onclick="hideAuthGate()">متابعة بدون حساب الآن</a></div>
+</div>
+
+<!-- ===================== Firebase cloud sync (Google sign-in) — must be the LAST script ===================== -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// same Firebase project as hsk4-flashcards; apiKey is public by design (security is enforced by Firestore rules)
+const cfg = { apiKey:"AIzaSyCzaXYSuqZgZ9c7B-iwBCWx5MCSEZe_tdw", authDomain:"hsk4-study-guide.firebaseapp.com", projectId:"hsk4-study-guide" };
+const PREFIX="hsk4tk_";
+const COLL="techProgress";              // isolated from flashcards' userProgress collection
+const SKIP={ "hsk4tk_ds_key":1 };       // DashScope key — device-specific, never synced
+
+let auth=null, db=null, provider=null, curUser=null, pushT=null, _applyingCloud=false;
+try{ const app=initializeApp(cfg); auth=getAuth(app); db=getFirestore(app); provider=new GoogleAuthProvider(); }
+catch(e){ console.warn("Firebase init failed (app still works offline):", e); }
+
+function localPayload(){ const o={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && k.indexOf(PREFIX)===0 && !SKIP[k]) o[k]=localStorage.getItem(k); } return o; }
+function applyPayload(o){ _applyingCloud=true; try{ Object.keys(o||{}).forEach(function(k){ if(k.indexOf(PREFIX)===0 && !SKIP[k] && typeof o[k]==="string") localStorage.setItem(k,o[k]); }); } finally{ _applyingCloud=false; } }
+async function pull(){ if(!curUser||!db) return null; try{ const s=await getDoc(doc(db,COLL,curUser.uid)); return s.exists()?s.data():null; }catch(e){ console.warn("cloud pull failed",e); return null; } }
+async function push(){ if(!curUser||!db) return; try{ await setDoc(doc(db,COLL,curUser.uid), { data:localPayload(), updatedAt:localStorage.getItem(PREFIX+"updated")||new Date().toISOString(), email:curUser.email||"", at:new Date().toISOString() }, {merge:true}); }catch(e){ console.warn("cloud push failed",e); } }
+
+window.scheduleCloudPush=function(){ if(!curUser) return; clearTimeout(pushT); pushT=setTimeout(push,1500); };
+window.fbUser=function(){ return curUser?{email:curUser.email,name:curUser.displayName}:null; };
+window.fbSignIn=async function(){ if(!auth){ alert("تعذّر تحميل Firebase. تحقّق من الاتصال (قد يتطلّب VPN داخل الصين)."); return; } try{ await signInWithPopup(auth,provider); }catch(e){ console.error("signin",e); alert("تعذّر تسجيل الدخول: "+((e&&e.code)||e)); } };
+window.fbSignOut=async function(){ try{ await signOut(auth); }catch(e){} };
+
+// auto-sync: every progress write (hsk4tk_*) schedules a debounced cloud push — no per-call wiring needed
+(function(){ const proto=window.Storage&&window.Storage.prototype; if(!proto||proto.__techPatched) return; proto.__techPatched=true; const origSet=proto.setItem, origRm=proto.removeItem;
+  proto.setItem=function(k,v){ origSet.call(this,k,v); if(!_applyingCloud && k && k.indexOf(PREFIX)===0 && k!==PREFIX+"updated" && !SKIP[k]){ try{ origSet.call(this,PREFIX+"updated",new Date().toISOString()); }catch(e){} if(window.scheduleCloudPush) window.scheduleCloudPush(); } };
+  proto.removeItem=function(k){ origRm.call(this,k); if(!_applyingCloud && k && k.indexOf(PREFIX)===0){ try{ origSet.call(this,PREFIX+"updated",new Date().toISOString()); }catch(e){} if(window.scheduleCloudPush) window.scheduleCloudPush(); } };
+})();
+
+// on login: cloud newer -> pull + reload; otherwise push local up
+async function syncOnLogin(){
+  const cloud=await pull();
+  const lt=new Date(localStorage.getItem(PREFIX+"updated")||"2000-01-01").getTime();
+  const ct=cloud?new Date(cloud.updatedAt||"2000-01-01").getTime():0;
+  if(cloud && cloud.data && ct>lt){ applyPayload(cloud.data); try{ const s=document.getElementById("authState"); if(s) s.textContent="تمت المزامنة من السحابة — يُعاد التحميل…"; }catch(e){} setTimeout(function(){ location.reload(); },700); return; }
+  await push(); try{ window._updateAuthUI&&window._updateAuthUI(); }catch(e){}
+}
+window.fbReady = !!auth;
+if(auth){ onAuthStateChanged(auth, function(u){ curUser=u; try{ window._updateAuthUI&&window._updateAuthUI(); }catch(e){} if(u){ try{ localStorage.setItem('hsk4tk_authed','1'); }catch(e){} var g=document.getElementById('authGate'); if(g) g.style.display='none'; try{ document.documentElement.style.overflow=''; }catch(e){} syncOnLogin(); } }); }
 </script>
 </body>
 </html>
