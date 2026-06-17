@@ -1287,10 +1287,11 @@ function printReport(id){
 function restartTest(){ startTest(T); }
 function reviewMissedNow(){ startTest({id:'rev', title:'مراجعة أخطاء — '+T.title, color:'var(--seal)', qs:T.res.filter(r=>!r.ok).map(r=>r.q), save:false}); }
 function resetProgress(){
-  if(!confirm('إعادة ضبط كلّ الإحصائيات وقائمة المراجعة وأفضل النتائج؟')) return;
-  weak=[]; doneCount=0; okCount=0; best={};
-  [LS_WEAK,LS_DONE,LS_OK,LS_BEST].forEach(k=>localStorage.removeItem(k));
-  renderHome();
+  if(!confirm('إعادة ضبط كل التقدّم؟ (الإحصائيات + قائمة المراجعة + أفضل النتائج + الإتقان لكل قاعدة + تشخيص الذكاء الاصطناعي). تقاريرك المحفوظة لن تُحذف.')) return;
+  weak=[]; doneCount=0; okCount=0; best={}; mastery={}; smastery={}; DIAG=null; picBest={};
+  [LS_WEAK,LS_DONE,LS_OK,LS_BEST,'hsk4tk_mastery','hsk4tk_smastery','hsk4tk_diag',LS_PICBEST].forEach(function(k){ localStorage.removeItem(k); });
+  if(window.scheduleCloudPush) window.scheduleCloudPush();
+  renderHome(); if(typeof updateStats==='function') updateStats(); if(typeof renderPicHome==='function') renderPicHome();
 }
 
 /* ===================== shared ===================== */
