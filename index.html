@@ -285,6 +285,7 @@ body{padding-bottom:64px}
 .rep-head{font-weight:800;font-size:.8rem;color:var(--ink2)}
 .rep-num{color:var(--ink3)}
 .rep-correct{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;direction:ltr;font-size:1.05rem;color:var(--ink);margin-top:5px}
+.rep-mean{font-size:.78rem;color:var(--ink2);margin-top:4px;line-height:1.7}
 .rep-yours{font-size:.8rem;color:var(--seal);margin-top:4px}
 .rep-prob{font-size:.82rem;color:var(--ink2);margin-top:6px;line-height:1.7;font-weight:600}
 .rep-tips{margin:7px 0 0;padding-inline-start:18px}
@@ -348,11 +349,17 @@ body{padding-bottom:64px}
 .print-head{text-align:center;margin-bottom:14px}
 .print-head .ph-t{font-weight:800;font-size:1.05rem;color:#111}
 .print-head .ph-s{color:#555;font-size:.8rem;margin-top:3px}
+/* printing mode: show ONLY the report on screen too (so WYSIWYG mobile browsers capture it correctly) */
+body.printing{background:#fff!important}
+body.printing > *{display:none!important}
+body.printing > #print-area{display:block!important;padding:10px;background:#fff;min-height:100vh}
+body.printing #print-area .tts-btn,body.printing #print-area .btn,body.printing #print-area .btn-row{display:none!important}
 @media print{
   html,body{background:#fff}
   body>*{display:none!important}
-  #print-area{display:block!important;padding:6px}
+  body>#print-area{display:block!important;padding:8px}
   #print-area .tts-btn,#print-area .btn,#print-area .btn-row{display:none!important}
+  #print-area .rep-item,#print-area .missed-item,#print-area .sk-row,#print-area .brk-row,#print-area .score-ring{page-break-inside:avoid;break-inside:avoid}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
@@ -1223,7 +1230,7 @@ function finishTest(){
   const _tw=_openW.slice(0,3).map(skillAr); const _unseenSk=unseenSkills().length;
   const focusNote = allSkillsMastered()? `<div class="focus-note done">🎉 أتقنت كل القواعد! واصل المراجعة الخفيفة وقتما شئت.</div>` : `<div class="focus-note">🎯 الاختبار القادم يستهدف قواعدك المفتوحة: <b>${_tw.join('، ')||'—'}</b> — بجملٍ مختلفة لنفس القاعدة حتى الإغلاق (${SKILL_HITS}/${SKILL_WIN})${_unseenSk?(`، مع استكشاف ${_unseenSk} قاعدة لم تُختبَر بعد`):''}.</div>`;
   document.getElementById('drill-run').style.display='none';
-  REPORT={title:T.title, items:T.res.map((r,i)=>({num:i+1, frags:r.q.frags.join(' / '), answer:r.q.answer, pinyin:r.q.pinyin||'', guess:r.guess||'', ok:r.ok, cat:(CLSMAP[r.cls]?CLSMAP[r.cls].ar:r.cls), catCode:r.cls, rule:r.q.ruleName||''}))};
+  REPORT={title:T.title, items:T.res.map((r,i)=>({num:i+1, frags:r.q.frags.join(' / '), answer:r.q.answer, pinyin:r.q.pinyin||'', guess:r.guess||'', ok:r.ok, cat:(CLSMAP[r.cls]?CLSMAP[r.cls].ar:r.cls), catCode:r.cls, rule:r.q.ruleName||'', ar:(r.q.ar||'')}))};
   const done=document.getElementById('drill-done'); done.style.display='block';
   done.innerHTML=`<div class="done-wrap">
     <div id="report-capture">
@@ -1231,12 +1238,11 @@ function finishTest(){
     <div class="score-ring" style="--p:${pct};--rc:${rc}"><div><span class="pp">${pct}%</span><span class="ps">${ok} / ${total}</span></div></div>
     <div style="font-weight:800;color:${rc};font-size:.86rem">${msg}</div>
     <div class="brk"><div class="missed-h" style="color:var(--ink2)">أداؤك حسب التصنيف</div>${brk}</div>
-    ${missedHtml}
+    <div class="ai-report" id="ai-report"></div>
     ${masteryHtml}
     ${focusNote}
     ${skillHtml}
     <div class="ai-report" id="ai-diag"></div>
-    <div class="ai-report" id="ai-report"></div>
     </div>
     <div class="btn-row" style="margin-top:16px;justify-content:center;flex-wrap:wrap">
       <button class="btn btn-check" onclick="startAdaptiveTest()">🎯 الاختبار التالي (حسب احتياجك)</button>
@@ -1281,8 +1287,12 @@ function printReport(id){
   const rec=reports.find(function(r){return r.id===id;}); if(!rec) return;
   const head='<div class="print-head"><div class="ph-t">مدرّب التكنيكات · 排序技巧 HSK4</div><div class="ph-s">'+rec.title+' — '+fmtDate(rec.ts)+'</div></div>';
   const pa=document.getElementById('print-area'); pa.innerHTML=head+rec.html;
-  window.print();
-  setTimeout(function(){ pa.innerHTML=''; }, 800);
+  document.body.classList.add('printing');           // show only the report (screen + print)
+  window.scrollTo(0,0);
+  let cleaned=false;
+  function cleanup(){ if(cleaned) return; cleaned=true; document.body.classList.remove('printing'); pa.innerHTML=''; window.removeEventListener('afterprint', cleanup); }
+  window.addEventListener('afterprint', cleanup);
+  setTimeout(function(){ try{ window.print(); }catch(e){ cleanup(); return; } setTimeout(cleanup, 60000); }, 150); // paint first; fallback restore after 60s if afterprint never fires
 }
 function restartTest(){ startTest(T); }
 function reviewMissedNow(){ startTest({id:'rev', title:'مراجعة أخطاء — '+T.title, color:'var(--seal)', qs:T.res.filter(r=>!r.ok).map(r=>r.q), save:false}); }
@@ -1526,11 +1536,14 @@ function getReportModel(){ try{ return localStorage.getItem('hsk4tk_report_model
 async function genReport(){
   const box=document.getElementById('ai-report');
   if(!box) return;
+  if(!REPORT||!REPORT.items.length) return;
   if(!getDsKey()){
-    box.innerHTML='<div class="key-warn">🔑 لعرض تقرير التحليل، أضف مفتاح DashScope في <b onclick="openSettings()" style="cursor:pointer;text-decoration:underline">الإعدادات ⚙️</b> (يُحفظ في جهازك فقط).</div>';
+    renderReport([]);
+    const b2=document.getElementById('ai-report');
+    if(b2) b2.insertAdjacentHTML('afterbegin','<div class="key-warn">🔑 الترتيب الصحيح ومعناه لكل سؤال بالأسفل. لإضافة شرح القاعدة النحوية لكل سؤال بالذكاء الاصطناعي، أضف مفتاح DashScope في <b onclick="openSettings()" style="cursor:pointer;text-decoration:underline">الإعدادات ⚙️</b> (يُحفظ في جهازك فقط).</div>');
+    saveCurrentReport();
     return;
   }
-  if(!REPORT||!REPORT.items.length) return;
   box.innerHTML='<div class="rep-title">📋 تحليل إجاباتك <span style="color:var(--ink3);font-weight:700">'+getReportModel()+'</span></div><div class="ai-loading"><span class="dots">⏳</span> يحلّل الذكاء الاصطناعي ترتيبك سؤالًا سؤالًا…</div>';
   const lines=REPORT.items.map(it=>`(${it.num}) القطع: ${it.frags}  ||  الترتيب الصحيح: ${it.answer}  ||  ترتيب الطالب: ${it.guess||'(لم يُكمل)'}  ||  ${it.ok?'صحيحة':'خاطئة'}`).join('\n');
   const prompt=`You are an expert HSK Chinese grammar tutor analyzing a student's 排序 (sentence-unscrambling) test.
@@ -1634,6 +1647,7 @@ function renderReport(aiItems){
     return `<div class="rep-item ${it.ok?'ok':'bad'}">
       <div class="rep-head">${it.ok?'✅':'❌'} <span class="rep-num">سؤال ${it.num}</span></div>
       <div class="rep-correct">${ttsRenderClickable(it.answer,it.pinyin)} <button class="tts-btn" onclick="ttsPlay('${esc(it.answer)}',this)">🔊</button></div>
+      ${it.ar?`<div class="rep-mean">${it.ar}</div>`:''}
       ${(!it.ok&&it.guess)?`<div class="rep-yours">ترتيبك: <span dir="ltr">${it.guess}</span></div>`:''}
       ${a.problem?`<div class="rep-prob">⚠️ ${a.problem}</div>`:''}
       ${tips?`<ul class="rep-tips">${tips}</ul>`:''}
