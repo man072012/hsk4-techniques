@@ -290,6 +290,11 @@ body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
 .rep-num{color:var(--ink3)}
 .rep-correct{font-family:'PingFang SC','Noto Sans CJK SC',sans-serif;direction:ltr;font-size:1.05rem;color:var(--ink);margin-top:5px}
 .rep-mean{font-size:.78rem;color:var(--ink2);margin-top:4px;line-height:1.7}
+.rep-did{font-size:.8rem;color:#7a5618;background:#f7eccd;border:1px solid #ecdcae;border-radius:7px;padding:4px 9px;margin-top:5px;display:inline-block}
+.insight{background:linear-gradient(135deg,#fbf6ec,#f5eddd);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.ins-jump{font-size:.92rem;color:var(--ink);line-height:1.85}
+.ins-jump b{color:var(--seal)}
+.ins-top{font-size:.82rem;color:var(--ink2);margin-top:7px;line-height:1.7}
 .rep-yours{font-size:.8rem;color:var(--seal);margin-top:4px}
 .rep-prob{font-size:.82rem;color:var(--ink2);margin-top:6px;line-height:1.7;font-weight:600}
 .rep-tips{margin:7px 0 0;padding-inline-start:18px}
@@ -1197,7 +1202,7 @@ function submitAndNext(){
   if(correct){ okCount++; localStorage.setItem(LS_OK,okCount); weak=weak.filter(a=>a!==cur.answer); }
   else { if(!weak.includes(cur.answer)) weak.push(cur.answer); }
   localStorage.setItem(LS_WEAK,JSON.stringify(weak));
-  T.res.push({q:cur, ok:correct, cls:qClass(cur), guess:guess});
+  T.res.push({q:cur, ok:correct, cls:qClass(cur), guess:guess, gorder:placed.slice()});
   document.getElementById('run-fill').style.width=((T.idx+1)/T.qs.length*100)+'%';
   if(T.idx<T.qs.length-1){ T.idx++; renderQuestion(); } else { finishTest(); }
 }
@@ -1208,6 +1213,31 @@ function answerBlock(){
 }
 function flashSlots(cls){ const s=document.getElementById('d-slots'); s.classList.add(cls); setTimeout(()=>s.classList.remove(cls),500); }
 
+function fragOrderOf(answer, frags){
+  let rem=normZh(answer); const used=new Array(frags.length).fill(false), order=[];
+  while(rem.length && order.length<frags.length){
+    let best=-1, bestLen=-1;
+    for(let i=0;i<frags.length;i++){ if(used[i])continue; const f=normZh(frags[i]); if(f && rem.indexOf(f)===0 && f.length>bestLen){ best=i; bestLen=f.length; } }
+    if(best<0) break;
+    used[best]=true; order.push(best); rem=rem.slice(bestLen);
+  }
+  return order.length===frags.length?order:null;
+}
+function analyzeItem(q, gorder){
+  if(!q||!q.frags||!gorder) return null;
+  const frags=q.frags, corr=fragOrderOf(q.answer, frags);
+  if(!corr || gorder.length!==corr.length) return null;
+  const diff=[]; for(let i=0;i<corr.length;i++) if(gorder[i]!==corr[i]) diff.push(i);
+  if(diff.length===0) return {misplaced:0, nearMiss:false, desc:''};
+  if(diff.length===2){
+    const a=diff[0], b=diff[1];
+    if(gorder[a]===corr[b] && gorder[b]===corr[a]){
+      const x=frags[corr[a]], y=frags[corr[b]], adj=Math.abs(a-b)===1;
+      return {misplaced:2, nearMiss:true, desc:'بدّلت ترتيب \u300c'+x+'\u300d و \u300c'+y+'\u300d'+(adj?' (متجاورتان)':'')+' — والباقي صحيح'};
+    }
+  }
+  return {misplaced:diff.length, nearMiss:false, desc:'الترتيب مشتّت — '+diff.length+' قطع في غير موضعها'};
+}
 function finishTest(){
   const total=T.res.length, ok=T.res.filter(r=>r.ok).length, pct=total?Math.round(ok/total*100):0;
   updateMastery(T.res);
@@ -1217,6 +1247,16 @@ function finishTest(){
   const brk=CLS.filter(x=>byc[x.c]).map(x=>{ const d=byc[x.c], p=Math.round(d.o/d.t*100);
     return `<div class="brk-row"><span class="bl" style="--sw:${x.sw}"><span class="dot"></span>${x.ar}</span><span class="bbar"><i style="width:${p}%;background:${x.sw}"></i></span><span class="bf">${d.o}/${d.t}</span></div>`; }).join('');
   const missed=T.res.filter(r=>!r.ok);
+  let _nearMiss=0; const _catErr={};
+  T.res.forEach(function(r){ if(!r.ok){ var a=analyzeItem(r.q,r.gorder); if(a&&a.nearMiss)_nearMiss++; var c=(CLSMAP[r.cls]?CLSMAP[r.cls].ar:r.cls); _catErr[c]=(_catErr[c]||0)+1; } });
+  const _proj=ok+_nearMiss;
+  const _top3=Object.keys(_catErr).map(function(k){return [k,_catErr[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,3);
+  const insight = (total && missed.length)
+    ? '<div class="insight">'
+      + ((_nearMiss>0 && _proj>ok) ? '<div class="ins-jump">\ud83d\udca1 <b>'+_nearMiss+'</b> من أخطائك مجرّد <b>تبديل بسيط</b> (تبديل مكان كلمتين) — لو ضبطتها تقفز من <b>'+ok+'</b> إلى <b>'+_proj+'</b> من '+total+'.</div>' : '')
+      + (_top3.length ? '<div class="ins-top">أكثر الأنماط التي أخطأت فيها: '+_top3.map(function(t){return t[0]+' ('+t[1]+')';}).join('، ')+'.</div>' : '')
+      + '</div>'
+    : '';
   const missedHtml = missed.length
     ? `<div class="missed"><div class="missed-h">✗ أخطأت في ${missed.length} — راجعها:</div>${missed.map(r=>`<div class="missed-item"><div class="mi-zh">${ttsRenderClickable(r.q.answer,r.q.pinyin)} <button class="tts-btn" onclick="ttsPlay('${esc(r.q.answer)}',this)">🔊</button></div><div class="mi-ar">${r.q.ar}</div></div>`).join('')}</div>`
     : `<div class="missed"><div class="missed-h" style="color:var(--jade)">✓ كل الأسئلة صحيحة — ممتاز!</div></div>`;
@@ -1234,7 +1274,7 @@ function finishTest(){
   const _tw=_openW.slice(0,3).map(skillAr); const _unseenSk=unseenSkills().length;
   const focusNote = allSkillsMastered()? `<div class="focus-note done">🎉 أتقنت كل القواعد! واصل المراجعة الخفيفة وقتما شئت.</div>` : `<div class="focus-note">🎯 الاختبار القادم يستهدف قواعدك المفتوحة: <b>${_tw.join('، ')||'—'}</b> — بجملٍ مختلفة لنفس القاعدة حتى الإغلاق (${SKILL_HITS}/${SKILL_WIN})${_unseenSk?(`، مع استكشاف ${_unseenSk} قاعدة لم تُختبَر بعد`):''}.</div>`;
   document.getElementById('drill-run').style.display='none';
-  REPORT={title:T.title, items:T.res.map((r,i)=>({num:i+1, frags:r.q.frags.join(' / '), answer:r.q.answer, pinyin:r.q.pinyin||'', guess:r.guess||'', ok:r.ok, cat:(CLSMAP[r.cls]?CLSMAP[r.cls].ar:r.cls), catCode:r.cls, rule:r.q.ruleName||'', ar:(r.q.ar||'')}))};
+  REPORT={title:T.title, items:T.res.map((r,i)=>({num:i+1, frags:r.q.frags.join(' / '), answer:r.q.answer, pinyin:r.q.pinyin||'', guess:r.guess||'', ok:r.ok, cat:(CLSMAP[r.cls]?CLSMAP[r.cls].ar:r.cls), catCode:r.cls, rule:r.q.ruleName||'', ar:(r.q.ar||''), did:(analyzeItem(r.q,r.gorder)||{}).desc||''}))};
   const done=document.getElementById('drill-done'); done.style.display='block';
   done.innerHTML=`<div class="done-wrap">
     <div id="report-capture">
@@ -1242,6 +1282,7 @@ function finishTest(){
     <div class="score-ring" style="--p:${pct};--rc:${rc}"><div><span class="pp">${pct}%</span><span class="ps">${ok} / ${total}</span></div></div>
     <div style="font-weight:800;color:${rc};font-size:.86rem">${msg}</div>
     <div class="brk"><div class="missed-h" style="color:var(--ink2)">أداؤك وفق التصنيف</div>${brk}</div>
+    ${insight}
     <div class="ai-report" id="ai-report"></div>
     ${masteryHtml}
     ${focusNote}
@@ -1653,6 +1694,7 @@ function renderReport(aiItems){
       <div class="rep-correct">${ttsRenderClickable(it.answer,it.pinyin)} <button class="tts-btn" onclick="ttsPlay('${esc(it.answer)}',this)">🔊</button></div>
       ${it.ar?`<div class="rep-mean">${it.ar}</div>`:''}
       ${(!it.ok&&it.guess)?`<div class="rep-yours">ترتيبك: <span dir="ltr">${it.guess}</span></div>`:''}
+      ${(!it.ok&&it.did)?`<div class="rep-did">\ud83d\udd27 ${it.did}</div>`:''}
       ${a.problem?`<div class="rep-prob">⚠️ ${a.problem}</div>`:''}
       ${tips?`<ul class="rep-tips">${tips}</ul>`:''}
     </div>`;
