@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="author" content="Mansour Alghamdi">
-<meta name="description" content="مدرّب تكنيكات الترتيب في HSK4 — رتّب الكلمات من شكلها وموضعها دون الحاجة لمعرفة معانيها. منهج + مرجع إشارات + تدريب أعمى.">
+<meta name="description" content="مدرّب تكنيكات الترتيب في HSK4 — رتّب الكلمات من شكلها وموضعها دون الحاجة لمعرفة معانيها. منهج + مرجع إشارات + تدريب.">
 <meta name="theme-color" content="#221a12">
 <title>HSK4 — مدرّب التكنيكات · 排序技巧</title>
 <style>
@@ -18,9 +18,9 @@
   --grid:#e7ddca; --line:#e8ddc9;
   --shadow:0 6px 22px rgba(34,26,18,.07);
 }
-html,body{font-family:'Tahoma','Segoe UI',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-overflow-scrolling:touch}
+html,body{font-family:'Tahoma','Segoe UI',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;min-height:100dvh;-webkit-overflow-scrolling:touch}
 .zh{font-family:'PingFang SC','Noto Sans CJK SC','Hiragino Sans GB','Microsoft YaHei',sans-serif}
-body{padding-bottom:64px}
+body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* ---- top bar ---- */
@@ -168,10 +168,14 @@ body{padding-bottom:64px}
 .ans-ar .reveal{font-size:.66rem;font-weight:800;color:var(--gold2);background:var(--goldsoft);padding:1px 7px;border-radius:5px;margin-inline-end:6px}
 
 /* ---- modal ---- */
-.modal{position:fixed;inset:0;background:rgba(34,26,18,.55);display:none;align-items:center;justify-content:center;z-index:90;padding:18px}
+.modal{position:fixed;inset:0;background:rgba(34,26,18,.55);display:none;align-items:center;justify-content:center;z-index:90;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));overflow-y:auto;-webkit-overflow-scrolling:touch}
 .modal.show{display:flex;animation:fade .2s}
-.modal-box{background:var(--paper);border-radius:16px;padding:20px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-box{position:relative;background:var(--paper);border-radius:16px;padding:20px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:88vh;max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .modal-box h3{font-size:1.02rem;margin-bottom:12px}
+.modal-head{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-20px -20px 12px;padding:13px 20px;background:var(--paper);border-bottom:1px solid var(--line);border-radius:16px 16px 0 0;z-index:3}
+.modal-head h3{margin:0}
+.modal-x{flex:none;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper2);color:var(--ink2);font-size:1rem;font-weight:700;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+.modal-x:active{background:var(--line)}
 .modal-box label{font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin:13px 0 6px}
 .modal-box .opt{display:flex;align-items:center;gap:8px;font-size:.82rem;margin:7px 0;color:var(--ink2)}
 .modal-box select,.modal-box input{width:100%;padding:9px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;font-size:.85rem}
@@ -344,7 +348,7 @@ body{padding-bottom:64px}
 .rep-li-date{font-size:.7rem;color:var(--ink3);margin-top:2px}
 .rep-li-del{background:none;border:none;color:var(--ink3);font-size:1rem;cursor:pointer;padding:4px;flex-shrink:0}
 .rep-view-body .score-ring{margin:10px auto}
-#reportsModal .modal-box{max-height:88vh;overflow:auto}
+/* reports modal uses base .modal-box scrolling */
 #print-area{display:none}
 .print-head{text-align:center;margin-bottom:14px}
 .print-head .ph-t{font-weight:800;font-size:1.05rem;color:#111}
@@ -389,7 +393,7 @@ body.printing #print-area .tts-btn,body.printing #print-area .btn,body.printing 
 <div class="tabs" role="tablist">
   <button class="tab active" id="tab-method" data-view="method" role="tab" aria-selected="true" aria-controls="view-method" tabindex="0" onclick="showView('method')"><span class="ic">🧭</span>المنهج<span class="zh">方法</span></button>
   <button class="tab" id="tab-signals" data-view="signals" role="tab" aria-selected="false" aria-controls="view-signals" tabindex="-1" onclick="showView('signals')"><span class="ic">📑</span>الإشارات<span class="zh">信号</span></button>
-  <button class="tab" id="tab-drill" data-view="drill" role="tab" aria-selected="false" aria-controls="view-drill" tabindex="-1" onclick="showView('drill')"><span class="ic">🎯</span>تدريب أعمى<span class="zh">盲练</span></button>
+  <button class="tab" id="tab-drill" data-view="drill" role="tab" aria-selected="false" aria-controls="view-drill" tabindex="-1" onclick="showView('drill')"><span class="ic">🎯</span>تدريب<span class="zh">盲练</span></button>
   <button class="tab" id="tab-pics" data-view="pics" role="tab" aria-selected="false" aria-controls="view-pics" tabindex="-1" onclick="showView('pics')"><span class="ic">📝</span>الصور<span class="zh">看图</span></button>
 </div>
 
@@ -421,7 +425,7 @@ body.printing #print-area .tts-btn,body.printing #print-area .btn,body.printing 
     <div id="laws"></div>
 
     <div class="footer">
-      انتقل إلى تبويب <b>الإشارات</b> لمرجع كامل بكلّ علامة وموضعها، أو إلى <b>تدريب أعمى</b> لتطبيق المنهج على أسئلة امتحانية حقيقية.
+      انتقل إلى تبويب <b>الإشارات</b> لمرجع كامل بكلّ علامة وموضعها، أو إلى <b>تبويب التدريب</b> لتطبيق المنهج على أسئلة امتحانية حقيقية.
     </div>
   </section>
 
@@ -496,9 +500,9 @@ body.printing #print-area .tts-btn,body.printing #print-area .btn,body.printing 
 </div>
 
 <!-- settings modal -->
-<div class="modal" id="settingsModal">
+<div class="modal" id="settingsModal" onclick="if(event.target===this)closeSettings()">
   <div class="modal-box">
-    <h3>⚙️ الإعدادات</h3>
+    <div class="modal-head"><h3>⚙️ الإعدادات</h3><button class="modal-x" onclick="closeSettings()" aria-label="إغلاق">✕</button></div>
     <label>مصدر النطق الصوتي</label>
     <div class="opt"><input type="radio" name="ttsSrc" value="auto" id="ts-a"><label for="ts-a" style="margin:0;font-weight:500">تلقائي (الأفضل المتاح)</label></div>
     <div class="opt"><input type="radio" name="ttsSrc" value="system" id="ts-s"><label for="ts-s" style="margin:0;font-weight:500">صوت النظام فقط (بدون إنترنت)</label></div>
@@ -508,7 +512,7 @@ body.printing #print-area .tts-btn,body.printing #print-area .btn,body.printing 
     <input type="password" id="dsKeyInput" class="key-input" placeholder="sk-..." autocomplete="off">
     <div class="modal-info">يُحفظ في جهازك فقط (localStorage)، ولا يُرسَل إلا إلى DashScope عند التقييم. احصل عليه من dashscope.console.aliyun.com</div>
     <label style="margin-top:16px">نموذج تقرير التحليل (بعد اختبار الترتيب)</label>
-    <div class="opt"><input type="radio" name="repModel" value="qwen-plus" id="rm-p"><label for="rm-p" style="margin:0;font-weight:500">qwen-plus — مضمون (مفعّل عندك)</label></div>
+    <div class="opt"><input type="radio" name="repModel" value="qwen-plus" id="rm-p"><label for="rm-p" style="margin:0;font-weight:500">qwen-plus — مضمون (مُفعَّل لديك)</label></div>
     <div class="opt"><input type="radio" name="repModel" value="qwen-max" id="rm-m"><label for="rm-m" style="margin:0;font-weight:500">qwen-max — الأقوى (يحتاج تفعيله في حسابك)</label></div>
     <div class="opt"><input type="radio" name="repModel" value="qwen-turbo" id="rm-t"><label for="rm-t" style="margin:0;font-weight:500">qwen-turbo — الأسرع والأرخص</label></div>
     <label style="margin-top:16px">☁️ المزامنة وحفظ التقدّم</label>
@@ -527,9 +531,9 @@ body.printing #print-area .tts-btn,body.printing #print-area .btn,body.printing 
 </div>
 
 <!-- reports modal -->
-<div class="modal" id="reportsModal">
+<div class="modal" id="reportsModal" onclick="if(event.target===this)closeReports()">
   <div class="modal-box">
-    <h3>📋 تقاريري السابقة</h3>
+    <div class="modal-head"><h3>📋 تقاريري السابقة</h3><button class="modal-x" onclick="closeReports()" aria-label="إغلاق">✕</button></div>
     <div id="reports-list"></div>
     <div id="report-view" style="display:none"></div>
     <div class="modal-actions">
@@ -1053,7 +1057,7 @@ function buildAdaptiveQs(){
   if(picked.length<SIZE){ shuffle(POOL).forEach(addQ); }
   return shuffle(picked).slice(0,SIZE);
 }
-function startAdaptiveTest(){ startTest({id:'adapt', title:'اختبار مُكيّف حسب احتياجك', color:'var(--seal)', qs:buildAdaptiveQs(), save:false}); }
+function startAdaptiveTest(){ startTest({id:'adapt', title:'اختبار مُكيّف وفق احتياجك', color:'var(--seal)', qs:buildAdaptiveQs(), save:false}); }
 const TEST_SIZE=10;
 
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -1087,32 +1091,32 @@ function renderHome(){
     const id='m'+i, b=best[id];
     const cls = b==null?'' : (b>=80?'passed':'tried');
     const bs = b==null?'' : `<span class="tbest" style="color:${b>=80?'var(--jade)':'var(--gold2)'}">${b}%</span>`;
-    return `<div class="test-tile ${cls}" onclick="startMixed(${i})">${bs}<span class="tn">${i+1}</span><span class="tl">١٠ مخلوط</span></div>`;
+    return `<div class="test-tile ${cls}" onclick="startMixed(${i})">${bs}<span class="tn">${i+1}</span><span class="tl">١٠ منوّعة</span></div>`;
   }).join('');
   const counts={}; CLS.forEach(x=>counts[x.c]=POOL.filter(q=>qClass(q)===x.c).length);
   const clsBtns=CLS.filter(x=>counts[x.c]>0).map(x=>`<button class="cls-btn" style="--sw:${x.sw}" onclick="startClass('${x.c}')"><span class="dot"></span>${x.ar}<span class="cnt">${counts[x.c]||0}</span></button>`).join('');
   const rev = weak.length
-    ? `<div class="review-card" onclick="startReview()"><div><div class="rl">↻ اختبار المراجعة</div><div class="rs">الأسئلة التي أخطأت فيها — رتّبها من جديد</div></div><div style="font-weight:800;color:var(--seal);font-family:Tahoma">${weak.length}</div></div>`
+    ? `<div class="review-card" onclick="startReview()"><div><div class="rl">↻ اختبار المراجعة</div><div class="rs">الأسئلة التي أخطأت فيها — أعِد ترتيبها</div></div><div style="font-weight:800;color:var(--seal);font-family:Tahoma">${weak.length}</div></div>`
     : `<div class="review-card off"><div><div class="rl" style="color:var(--ink3)">↻ اختبار المراجعة</div><div class="rs">لا أخطاء محفوظة — أحسنت!</div></div></div>`;
   const seenCats=CLS.filter(x=>mastery[x.c]&&mastery[x.c].seen);
   const oSeen=seenCats.reduce((a,x)=>a+mastery[x.c].seen,0), oOk=seenCats.reduce((a,x)=>a+mastery[x.c].correct,0);
   const oPct=oSeen?Math.round(oOk/oSeen*100):0;
   const _ms=goalSkills().filter(skClosed).length, _ts=goalSkills().length, _og=openWeakSkills().length;
-  const masteryBars = seenCats.length? seenCats.map(x=>{const p=Math.round(clsAcc(x.c)*100); const dn=clsMastered(x.c); return `<div class="brk-row"><span class="bl" style="--sw:${x.sw}"><span class="dot"></span>${x.ar}${dn?' ✓':''}</span><span class="bbar"><i style="width:${p}%;background:${x.sw}"></i></span><span class="bf">${p}% · ${mastery[x.c].seen}</span></div>`;}).join('') : '<div class="rs" style="color:var(--ink3);font-size:.78rem">ابدأ أول اختبار وسيظهر هنا تحليل قوّتك وضعفك في كل تصنيف، ويتكيّف ما بعده حسب احتياجك.</div>';
-  const journey = `<div class="journey"><div class="journey-top"><div><div class="journey-t">🚀 رحلة التعلّم المُكيّفة</div><div class="journey-s">اختبر دون كشف، حلّل أخطاءك بالذكاء الاصطناعي، ثم اختبار جديد يستهدف ضعفك — حتى الإتقان.</div></div>${oSeen?`<div class="journey-pct">${oPct}%</div>`:''}</div><button class="btn btn-check" style="width:100%;margin-top:11px" onclick="startAdaptiveTest()">${oSeen?'واصل الرحلة ← (اختبار حسب احتياجك)':'ابدأ رحلة التعلّم ←'}</button>${_ts?`<div class="journey-diag">📌 قواعد مُغلقة بنجاح: <b>${_ms}/${_ts}</b>${_og?` · أهداف مفتوحة: <b>${_og}</b>`:''}</div>`:''}${(DIAG&&DIAG.summary)?`<div class="journey-diag">🧠 نمطك الحالي (حسب الذكاء الاصطناعي): ${DIAG.summary}</div>`:''}${reports.length?`<button class="btn btn-next" style="width:100%;margin-top:8px" onclick="openReports()">📋 تقاريري السابقة (${reports.length})</button>`:''}</div>`;
+  const masteryBars = seenCats.length? seenCats.map(x=>{const p=Math.round(clsAcc(x.c)*100); const dn=clsMastered(x.c); return `<div class="brk-row"><span class="bl" style="--sw:${x.sw}"><span class="dot"></span>${x.ar}${dn?' ✓':''}</span><span class="bbar"><i style="width:${p}%;background:${x.sw}"></i></span><span class="bf">${p}% · ${mastery[x.c].seen}</span></div>`;}).join('') : '<div class="rs" style="color:var(--ink3);font-size:.78rem">ابدأ أول اختبار وسيظهر هنا تحليل قوّتك وضعفك في كل تصنيف، ويتكيّف ما يليه وفق احتياجك.</div>';
+  const journey = `<div class="journey"><div class="journey-top"><div><div class="journey-t">🚀 رحلة التعلّم المُكيّفة</div><div class="journey-s">اختبر دون كشف، حلّل أخطاءك بالذكاء الاصطناعي، ثم اختبار جديد يستهدف ضعفك — حتى الإتقان.</div></div>${oSeen?`<div class="journey-pct">${oPct}%</div>`:''}</div><button class="btn btn-check" style="width:100%;margin-top:11px" onclick="startAdaptiveTest()">${oSeen?'واصل الرحلة ← (اختبار وفق احتياجك)':'ابدأ رحلة التعلّم ←'}</button>${_ts?`<div class="journey-diag">📌 قواعد مُغلقة بنجاح: <b>${_ms}/${_ts}</b>${_og?` · أهداف مفتوحة: <b>${_og}</b>`:''}</div>`:''}${(DIAG&&DIAG.summary)?`<div class="journey-diag">🧠 نمطك الحالي (وفق الذكاء الاصطناعي): ${DIAG.summary}</div>`:''}${reports.length?`<button class="btn btn-next" style="width:100%;margin-top:8px" onclick="openReports()">📋 تقاريري السابقة (${reports.length})</button>`:''}</div>`;
   home.innerHTML = `
     <div class="drill-stats">
-      <div class="stat"><div class="n" id="st-done">${doneCount}</div><div class="l">حاولتَها</div></div>
+      <div class="stat"><div class="n" id="st-done">${doneCount}</div><div class="l">محاولات</div></div>
       <div class="stat"><div class="n j" id="st-correct">${okCount}</div><div class="l">صحيحة</div></div>
       <div class="stat"><div class="n s" id="st-weak">${weak.length}</div><div class="l">تحتاج مراجعة</div></div>
     </div>
     ${journey}
-    <div class="sect-h">📊 الإتقان حسب التصنيف <span class="zh">掌握度</span></div>
+    <div class="sect-h">📊 الإتقان وفق التصنيف <span class="zh">掌握度</span></div>
     <div class="brk">${masteryBars}</div>
-    <div class="drill-instr" style="margin-top:14px">أو اختر وضعًا يدويًّا: لا يظهر صح/خطأ أثناء الاختبار — النتيجة والتحليل في النهاية فقط.</div>
-    <div class="sect-h">📦 اختبارات مخلوطة <span class="zh">混合测验</span></div>
+    <div class="drill-instr" style="margin-top:14px">أو اختر نمطًا يدويًّا: لا تظهر علامة الصواب أو الخطأ أثناء الاختبار — النتيجة والتحليل في الختام.</div>
+    <div class="sect-h">📦 اختبارات منوّعة <span class="zh">混合测验</span></div>
     <div class="test-grid">${tiles}</div>
-    <div class="sect-h">🎨 تدريب حسب التصنيف <span class="zh">按分类训练</span></div>
+    <div class="sect-h">🎨 تدريب وفق التصنيف <span class="zh">按分类训练</span></div>
     <div class="cls-row">${clsBtns}</div>
     <div class="sect-h">↻ المراجعة <span class="zh">复习</span></div>
     ${rev}
@@ -1120,7 +1124,7 @@ function renderHome(){
   `;
 }
 
-function startMixed(i){ startTest({id:'m'+i, title:'اختبار مخلوط '+(i+1), color:'var(--gold)', qs:MIXED[i], save:true}); }
+function startMixed(i){ startTest({id:'m'+i, title:'اختبار منوّع '+(i+1), color:'var(--gold)', qs:MIXED[i], save:true}); }
 function startClass(c){
   const pool=seededShuffle(POOL.filter(q=>qClass(q)===c), 4242);
   if(!pool.length) return;
@@ -1237,7 +1241,7 @@ function finishTest(){
     <div class="done-title">${T.title}</div>
     <div class="score-ring" style="--p:${pct};--rc:${rc}"><div><span class="pp">${pct}%</span><span class="ps">${ok} / ${total}</span></div></div>
     <div style="font-weight:800;color:${rc};font-size:.86rem">${msg}</div>
-    <div class="brk"><div class="missed-h" style="color:var(--ink2)">أداؤك حسب التصنيف</div>${brk}</div>
+    <div class="brk"><div class="missed-h" style="color:var(--ink2)">أداؤك وفق التصنيف</div>${brk}</div>
     <div class="ai-report" id="ai-report"></div>
     ${masteryHtml}
     ${focusNote}
@@ -1245,7 +1249,7 @@ function finishTest(){
     <div class="ai-report" id="ai-diag"></div>
     </div>
     <div class="btn-row" style="margin-top:16px;justify-content:center;flex-wrap:wrap">
-      <button class="btn btn-check" onclick="startAdaptiveTest()">🎯 الاختبار التالي (حسب احتياجك)</button>
+      <button class="btn btn-check" onclick="startAdaptiveTest()">🎯 الاختبار التالي (وفق احتياجك)</button>
       ${missed.length?'<button class="btn btn-hint" onclick="reviewMissedNow()">راجع أخطاءك الآن</button>':''}
       <button class="btn btn-next" onclick="renderHome()">القائمة ←</button>
     </div></div>`;
@@ -1269,7 +1273,7 @@ function fmtDate(ts){ const d=new Date(ts); return d.toLocaleDateString('ar-EG-u
 function renderReportsList(){
   const wrap=document.getElementById('reports-list'); const view=document.getElementById('report-view');
   view.style.display='none'; view.innerHTML=''; wrap.style.display='block';
-  if(!reports.length){ wrap.innerHTML='<div class="rs" style="color:var(--ink3);text-align:center;padding:22px">لا توجد تقارير محفوظة بعد. أكمِل اختبارًا في «تدريب أعمى» ليُحفَظ هنا تلقائيًّا.</div>'; return; }
+  if(!reports.length){ wrap.innerHTML='<div class="rs" style="color:var(--ink3);text-align:center;padding:22px">لا توجد تقارير محفوظة بعد. أكمِل اختبارًا في «تدريب» ليُحفَظ هنا تلقائيًّا.</div>'; return; }
   wrap.innerHTML=reports.map(function(r){
     const rc=r.pct>=80?'var(--jade)':(r.pct>=50?'var(--gold2)':'var(--seal)');
     return '<div class="rep-list-item" onclick="viewReport('+r.id+')"><span class="rep-li-score" style="background:'+rc+'">'+r.pct+'%</span><span class="rep-li-main"><div style="font-weight:700;font-size:.84rem">'+r.title+'</div><div class="rep-li-date">'+fmtDate(r.ts)+' · '+r.ok+'/'+r.total+'</div></span><button class="rep-li-del" onclick="event.stopPropagation();deleteReport('+r.id+')" aria-label="حذف">🗑</button></div>';
